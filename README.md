@@ -1,2 +1,1 @@
-# next-science-ui-dev
-next-science-ui-dev
+# react_adminpage_namrata
