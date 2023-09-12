@@ -116,7 +116,7 @@ export default function LoginPage() {
                 />
               </Grid>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="#" to='/confirmemail'>
                   Forgot UserId/Password
                 </Link>
               </Grid>

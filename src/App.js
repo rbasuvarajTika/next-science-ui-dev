@@ -4,26 +4,41 @@ import LoginPage from './Components/LoginPage';
 // import PagingTabs from './Components/PagingTabs';
 // import UserTable from './Components/UserTable';
 import AdminPage from './Components/AdminPage';
-import { FaxPage } from './Components/FaxPage';
+import { FaxTable } from './Components/FaxTable'; 
+import ResetPassword from './Components/ResetPassword';
+import ConfirmEmail from './Components/ConfirmEmail';
+import EditUser from './Components/EditUser';
+import CreateNewUser from './Components/CreateNewUser';
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
       element: <LoginPage/>,
     },
-    //  {
-    //    path: "/forgotpassword",
-    //    element: <ForgotPassword/>,
-    //  },
+      {
+        path: "/confirmemail",
+        element: <ConfirmEmail/>,
+     },
     {
       path: "/adminpage",
       element: <AdminPage/>,
     },
     {
-      path: "/faxlist",
-      element: <FaxPage/>,
+      path: "/fax",
+      element: <FaxTable/>,
     },
-  
+    {
+      path: "/resetpassword",
+      element: <ResetPassword/>,
+    },
+    {
+      path: "/edituser",
+      element: <EditUser/>,
+    },
+    {
+      path: "/createnewuser",
+      element: <CreateNewUser/>,
+    },
   ]);
   return (
     <div className="App">

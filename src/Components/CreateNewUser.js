@@ -1,0 +1,248 @@
+import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import PagingTabs from './PagingTabs';
+import axios from 'axios';
+
+export default function CreateNewUser() {
+  const [alignment, setAlignment] = React.useState('web');
+  const [userData, setUserData] = React.useState({
+    username: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    email: '',
+    address: '',
+    password: '',
+    confirmPassword:'',
+    otherPassword: ''
+
+  });
+
+
+  const handleChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
+  const createUser = async () => {
+    try {
+       // Get the token from local storage
+       const token = localStorage.getItem('token');
+
+       //Include the token in the request headers
+       const config = {
+         headers: {
+           Authorization: `Bearer ${token}`,
+
+         },
+         
+       };
+       console.log(config);
+      const response = await axios.post('/api/v1/users/create/user', userData, config);
+
+      if (response.status === 201) {
+        // User was successfully created (assuming you return a 201 status code)
+        // You can handle success here, e.g., show a success message
+      } else {
+        // Handle errors, e.g., show an error message
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+      // Handle network or other errors
+    }
+  };
+  
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({
+      ...userData,
+      [name]: value,
+    });
+  };
+  
+  return (
+
+    <React.Fragment>
+      
+      <CssBaseline />
+      <PagingTabs/>
+      <Container>
+      <ToggleButtonGroup
+        color="primary"
+        value={alignment}
+        exclusive
+        onChange={handleChange}
+        size='small'
+        aria-label="Platform"
+        sx={{float:"left", borderRadius:'10px'}}
+      >
+        <ToggleButton value="Standard">Standard</ToggleButton>
+        <ToggleButton value="SAML">SAML</ToggleButton>
+      </ToggleButtonGroup>
+        <Box sx={{ }}>
+        <Button variant="contained" sx={{backgroundColor:"#8bc34a", color:"black"}}>Create New User</Button>
+        <p style={{textAlign:'left'}}>Primary Email</p>
+        <Stack spacing={4} direction="row">
+        <div>
+             <p className='fieldLabel'>*User Id</p>
+             <TextField
+              margin="normal"
+              name="userId"
+              value={userData.userId}
+              onChange={handleInputChange}
+            //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+        </div>
+        
+        <div>
+        <p className='fieldLabel'>*First Name</p>
+             <TextField
+              margin="normal"
+              name="firstName"
+              value={userData.firstName}
+              onChange={handleInputChange}
+            //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+        </div><div>
+        <p className='fieldLabel'>*Last Name</p>
+             <TextField
+              margin="normal"
+              name="lastName"
+            //   label="Serach User"
+            value={userData.lastName}
+            onChange={handleInputChange}
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+        </div>
+        <div>
+        <p className='fieldLabel'>Phone</p>
+             <TextField
+              margin="normal"
+              name="phone"
+              value={userData.phone}
+              onChange={handleInputChange}
+            //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+        </div>
+        </Stack>
+        <p style={{textAlign:'left'}}>Secondary Email</p>
+        <Stack spacing={4} direction="row">
+        <div>
+             <p className='fieldLabel'>Email:</p>
+             <TextField
+              margin="normal"
+              name="email"
+              value={userData.email}
+            onChange={handleInputChange}
+              //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+        </div>
+        
+        <div>
+        <p className='fieldLabel'>Address:</p>
+             <TextField
+              margin="normal"
+              name="address"
+              value={userData.address}
+              onChange={handleInputChange}
+            //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+        </div><div></div>
+
+        <div>
+          <p>Std Login Pwd:</p>
+          </div>
+          <div>
+            <p></p>
+            {/* <TextField
+            margin="normal"
+            name="password"
+            value={userData.password}
+            onClick={handleInputChange}
+            type="password"
+            id="outlined-size-small"
+            size='small'
+            sx={{marginTop:0, backgroundColor:"blue", border: '1px solid black'}}
+          /> */}
+            <TextField
+              margin="normal"
+              name="password"
+              value={userData.password}
+              onChange={handleInputChange}
+            //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+          <TextField
+              margin="normal"
+              name="confirmPassword"
+              value={userData.confirmPassword}
+              onChange={handleInputChange}
+            //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+              <TextField
+              margin="normal"
+              name="otherPassword"
+              value={userData.otherPassword}
+              onChange={handleInputChange}
+            //   label="Serach User"
+              type="text"
+              id="outlined-size-small"
+              size='small'
+              sx={{marginTop:0}}
+            />
+        </div>
+        </Stack>
+        </Box>
+        <Divider light />
+
+            <Button
+              type="submit"
+              variant="outlined"
+              className='border'
+              onClick={createUser}
+              sx={{ mt: 3, mb: 2 , backgroundColor:'#ba000d',color:'black'}}
+            >
+              Submit
+            </Button>
+      </Container>
+    </React.Fragment>
+  );
+}

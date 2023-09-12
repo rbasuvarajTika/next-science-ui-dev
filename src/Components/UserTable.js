@@ -10,10 +10,10 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
 const columns = [
-  { id: 'user_id', label: 'User Id', minWidth: 170 },
-  { id: 'first_name', label: 'First Name', minWidth: 100 },
+  { id: 'username', label: 'User Id', minWidth: 170 },
+  { id: 'firstName', label: 'First Name', minWidth: 100 },
   {
-    id: 'last_name',
+    id: 'lastName',
     label: 'Last name',
     minWidth: 170,
     align: 'right',
@@ -34,14 +34,14 @@ const columns = [
 
   },
   {
-    id: 'type',
+    id: 'userType',
     label: 'Type',
     minWidth: 170,
     align: 'right',
 
   },
   {
-    id: 'status',
+    id: 'userStatusFlag',
     label: 'Status',
     minWidth: 170,
     align: 'right',
@@ -61,7 +61,7 @@ export default function UserTable(props) {
         // Get the token from local storage
         const token = localStorage.getItem('token');
 
-        // Include the token in the request headers
+        //Include the token in the request headers
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,10 +69,11 @@ export default function UserTable(props) {
           },
           
         };
-        console.log(config);
-        const response = await axios.get('/api/v1/users/getUser', config); // Include the token in the request
-        setUsers(response.data.data); // Update state with the fetched data
-        console.log(response.data.data);
+        
+       const response = await axios.get('/api/v1/users/userList', config); // Include the token in the request
+       //const response = await axios.get('users/userList');
+       setUsers(response.data.data.data); // Update state with the fetched data
+        console.log(response.data.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -109,7 +110,7 @@ export default function UserTable(props) {
           </TableHead>
           <TableBody>
             {users
-              .filter((item) => item.first_name.toLowerCase().includes(user))
+              .filter((item) => String(item.username).toLowerCase().includes(user))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (

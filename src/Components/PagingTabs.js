@@ -49,7 +49,7 @@ const logoutHandle=()=>{
       >
         Admin
       </Button></Link>
-      <Link className='link' to='/faxlist'>   <Button
+      <Link className='link' to='/fax'>   <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"

@@ -2,7 +2,7 @@
   "name": "rx_management",
   "version": "0.1.0",
   "proxy": "http://localhost:9090",
- "private": true,
+  "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.0",
     "cors": "^2.8.5",
+    "json-server": "^0.17.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-proxy": "^1.1.8",
@@ -44,5 +45,5 @@
       "last 1 safari version"
     ]
   }
- 
+  
 }
