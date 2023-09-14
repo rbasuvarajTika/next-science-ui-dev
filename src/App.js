@@ -28,7 +28,7 @@ function App() {
       element: <FaxTable/>,
     },
     {
-      path: "/resetpassword",
+      path: "/resetpassword/:userId",
       element: <ResetPassword/>,
     },
     {

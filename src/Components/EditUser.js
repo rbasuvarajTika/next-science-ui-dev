@@ -11,6 +11,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
 import { useParams, useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function EditUser() {
   const { userId } = useParams(); // Get the user ID from route parameters
@@ -51,9 +52,12 @@ export default function EditUser() {
           // Fetch user data only when userId is available and selectedUser is not set
           const response = await axios.get(`/api/v1/users/user/${userId}`, config);
           if (response.status === 200) {
+            alert('Updated user Sucessfully')
             userDataToSet = response.data.data.data; // Assuming the response contains user data
+           
           } else {
             // Handle errors
+            alert('Failed to Update')
           }
         }
 

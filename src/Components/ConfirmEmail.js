@@ -18,6 +18,7 @@ export default function ConfirmEmail({ onNext }) {
       // Send a POST request to your API with the email data
       await axios.post('/api/v1/notification/emails/forgotpassword', {
         email: email,
+        resetLink:'http://localhost:3000/resetpassword'
       });
 
       // If the request is successful, call the onNext callback to move to the next step

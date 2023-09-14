@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 export default function ResetPassword({ onReset }) {
+  const { userId } = useParams(); // Get the user ID from route parameters
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -24,7 +26,7 @@ export default function ResetPassword({ onReset }) {
       try {
         // Send a PUT request to update the password in the database
         const response = await axios.put(
-          `/api/v1/users/update/user/password/406`,
+          `/api/v1/users/update/user/password/${userId}`,
           { newPassword: newPassword }
         );
 
