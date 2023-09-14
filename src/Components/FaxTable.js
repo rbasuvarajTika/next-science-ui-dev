@@ -67,7 +67,7 @@ export function FaxTable() {
 
   // Filter faxes based on the search input
   const filteredFaxes = faxes.filter((fax) =>
-    String(fax.caseId).toLowerCase().includes(searchFax)
+    String(fax.faxId).toLowerCase().includes(searchFax)
   );
 
   return (

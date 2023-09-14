@@ -7,6 +7,7 @@ import AdminPage from './Components/AdminPage';
 import { FaxTable } from './Components/FaxTable'; 
 import ResetPassword from './Components/ResetPassword';
 import ConfirmEmail from './Components/ConfirmEmail';
+import FaxView from './Components/FaxView';
 import EditUser from './Components/EditUser';
 import CreateNewUser from './Components/CreateNewUser';
 function App() {
@@ -19,6 +20,10 @@ function App() {
         path: "/confirmemail",
         element: <ConfirmEmail/>,
      },
+     {
+      path: "/faxview",
+      element: <FaxView/>,
+    },
     {
       path: "/adminpage",
       element: <AdminPage/>,
