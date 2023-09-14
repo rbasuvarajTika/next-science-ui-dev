@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import axios from 'axios';
 
 export default function ResetPassword({ onReset }) {
   const [newPassword, setNewPassword] = useState('');
@@ -15,15 +16,29 @@ export default function ResetPassword({ onReset }) {
     setConfirmPassword(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check if the newPassword and confirmPassword match
     if (newPassword === confirmPassword) {
-      // Update the password in the database
-      // You can implement this logic as needed
+      try {
+        // Send a PUT request to update the password in the database
+        const response = await axios.put(
+          `/api/v1/users/update/user/password/406`,
+          { newPassword: newPassword }
+        );
 
-      onReset(); // Call the onReset callback to complete the password reset
+        if (response.status === 200) {
+          // Password reset successful
+          // You can handle success here, e.g., show a success message
+          onReset(); // Call the onReset callback to complete the password reset
+        } else {
+          // Handle errors, e.g., show an error message
+        }
+      } catch (error) {
+        // Handle network or other errors
+        console.error('Error resetting password:', error);
+      }
     } else {
       // Handle password mismatch error
     }

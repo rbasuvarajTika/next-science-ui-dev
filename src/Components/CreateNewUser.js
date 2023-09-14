@@ -14,16 +14,14 @@ import axios from 'axios';
 export default function CreateNewUser() {
   const [alignment, setAlignment] = React.useState('web');
   const [userData, setUserData] = React.useState({
-    username: '',
+    userName: '',
     firstName: '',
     lastName: '',
     phone: '',
     email: '',
     address: '',
-    password: '',
-    confirmPassword:'',
-    otherPassword: ''
-
+    password: '', 
+      
   });
 
 
@@ -33,18 +31,16 @@ export default function CreateNewUser() {
 
   const createUser = async () => {
     try {
-       // Get the token from local storage
-       const token = localStorage.getItem('token');
+      // Get the token from local storage
+      const token = localStorage.getItem('token');
 
-       //Include the token in the request headers
-       const config = {
-         headers: {
-           Authorization: `Bearer ${token}`,
-
-         },
-         
-       };
-       console.log(config);
+      // Include the token in the request headers
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      console.log(config);
       const response = await axios.post('/api/v1/users/create/user', userData, config);
 
       if (response.status === 201) {
@@ -58,176 +54,156 @@ export default function CreateNewUser() {
       // Handle network or other errors
     }
   };
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserData({
-      ...userData,
-      [name]: value,
-    });
+
+    // Use the spread operator to create a copy of the current userData
+    const updatedUserData = { ...userData };
+     console.log(updatedUserData);
+    // Set the value for the changed field
+    updatedUserData[name] = value;
+
+    // Set default values of null for fields that are not in the form
+    const fieldsNotInForm = [
+      'middleName','confirmPassword','otherPassword','passwordUpdatedDate','role','type',
+      'city','state','zip','image','salesForce','createdUser','createdDate','updatedUser','updateDate'
+    ];
+
+    for (const field of fieldsNotInForm) {
+      if (!updatedUserData.hasOwnProperty(field)) {
+        updatedUserData[field] = null;
+      }
+    }
+
+    // Update the state with the modified userData
+    setUserData(updatedUserData);
+    console.log(updatedUserData);
   };
-  
+
   return (
-
     <React.Fragment>
-      
       <CssBaseline />
-      <PagingTabs/>
+      <PagingTabs />
       <Container>
-      <ToggleButtonGroup
-        color="primary"
-        value={alignment}
-        exclusive
-        onChange={handleChange}
-        size='small'
-        aria-label="Platform"
-        sx={{float:"left", borderRadius:'10px'}}
-      >
-        <ToggleButton value="Standard">Standard</ToggleButton>
-        <ToggleButton value="SAML">SAML</ToggleButton>
-      </ToggleButtonGroup>
-        <Box sx={{ }}>
-        <Button variant="contained" sx={{backgroundColor:"#8bc34a", color:"black"}}>Create New User</Button>
-        <p style={{textAlign:'left'}}>Primary Email</p>
-        <Stack spacing={4} direction="row">
-        <div>
-             <p className='fieldLabel'>*User Id</p>
-             <TextField
-              margin="normal"
-              name="userId"
-              value={userData.userId}
-              onChange={handleInputChange}
-            //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
-        </div>
-        
-        <div>
-        <p className='fieldLabel'>*First Name</p>
-             <TextField
-              margin="normal"
-              name="firstName"
-              value={userData.firstName}
-              onChange={handleInputChange}
-            //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
-        </div><div>
-        <p className='fieldLabel'>*Last Name</p>
-             <TextField
-              margin="normal"
-              name="lastName"
-            //   label="Serach User"
-            value={userData.lastName}
-            onChange={handleInputChange}
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
-        </div>
-        <div>
-        <p className='fieldLabel'>Phone</p>
-             <TextField
-              margin="normal"
-              name="phone"
-              value={userData.phone}
-              onChange={handleInputChange}
-            //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
-        </div>
-        </Stack>
-        <p style={{textAlign:'left'}}>Secondary Email</p>
-        <Stack spacing={4} direction="row">
-        <div>
-             <p className='fieldLabel'>Email:</p>
-             <TextField
-              margin="normal"
-              name="email"
-              value={userData.email}
-            onChange={handleInputChange}
-              //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
-        </div>
-        
-        <div>
-        <p className='fieldLabel'>Address:</p>
-             <TextField
-              margin="normal"
-              name="address"
-              value={userData.address}
-              onChange={handleInputChange}
-            //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
-        </div><div></div>
-
-        <div>
-          <p>Std Login Pwd:</p>
-          </div>
-          <div>
-            <p></p>
-            {/* <TextField
-            margin="normal"
-            name="password"
-            value={userData.password}
-            onClick={handleInputChange}
-            type="password"
-            id="outlined-size-small"
-            size='small'
-            sx={{marginTop:0, backgroundColor:"blue", border: '1px solid black'}}
-          /> */}
-            <TextField
-              margin="normal"
-              name="password"
-              value={userData.password}
-              onChange={handleInputChange}
-            //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
-          <TextField
-              margin="normal"
-              name="confirmPassword"
-              value={userData.confirmPassword}
-              onChange={handleInputChange}
-            //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
+        <ToggleButtonGroup
+          color="primary"
+          value={alignment}
+          exclusive
+          onChange={handleChange}
+          size='small'
+          aria-label="Platform"
+          sx={{ float: "left", borderRadius: '10px' }}
+        >
+          <ToggleButton value="Standard">Standard</ToggleButton>
+          <ToggleButton value="SAML">SAML</ToggleButton>
+        </ToggleButtonGroup>
+        <Box sx={{}}>
+          <Button variant="contained" sx={{ backgroundColor: "#8bc34a", color: "black" }}>Create New User</Button>
+          <p style={{ textAlign: 'left' }}>Primary Email</p>
+          <Stack spacing={4} direction="row">
+            <div>
+              <p className='fieldLabel'>*User Id</p>
               <TextField
-              margin="normal"
-              name="otherPassword"
-              value={userData.otherPassword}
-              onChange={handleInputChange}
-            //   label="Serach User"
-              type="text"
-              id="outlined-size-small"
-              size='small'
-              sx={{marginTop:0}}
-            />
+                margin="normal"
+                name="userName"
+                value={userData.userName}
+                onChange={handleInputChange}
+                type="text"
+                id="outlined-size-small"
+                size='small'
+                sx={{ marginTop: 0 }}
+              />
+            </div>
+
+            <div>
+              <p className='fieldLabel'>*First Name</p>
+              <TextField
+                margin="normal"
+                name="firstName"
+                value={userData.firstName}
+                onChange={handleInputChange}
+                type="text"
+                id="outlined-size-small"
+                size='small'
+                sx={{ marginTop: 0 }}
+              />
+            </div>
+            <div>
+              <p className='fieldLabel'>*Last Name</p>
+              <TextField
+                margin="normal"
+                name="lastName"
+                value={userData.lastName}
+                onChange={handleInputChange}
+                type="text"
+                id="outlined-size-small"
+                size='small'
+                sx={{ marginTop: 0 }}
+              />
+            </div>
+            <div>
+              <p className='fieldLabel'>Phone</p>
+              <TextField
+                margin="normal"
+                name="phone"
+                value={userData.phone}
+                onChange={handleInputChange}
+                type="text"
+                id="outlined-size-small"
+                size='small'
+                sx={{ marginTop: 0 }}
+              />
+            </div>
+          </Stack>
+          <p style={{ textAlign: 'left' }}>Secondary Email</p>
+          <Stack spacing={4} direction="row">
+            <div>
+              <p className='fieldLabel'>Email:</p>
+              <TextField
+                margin="normal"
+                name="email"
+                value={userData.email}
+                onChange={handleInputChange}
+                type="text"
+                id="outlined-size-small"
+                size='small'
+                sx={{ marginTop: 0 }}
+              />
+            </div>
+
+            <div>
+              <p className='fieldLabel'>Address:</p>
+              <TextField
+                margin="normal"
+                name="address"
+                value={userData.address}
+                onChange={handleInputChange}
+                type="text"
+                id="outlined-size-small"
+                size='small'
+                sx={{ marginTop: 0 }}
+              />
+            </div>
+            <div></div>
+
+            <div>
+              <p>Std Login Pwd:</p>
+            </div>
+            <div>
+              <p></p>
+              <TextField
+                margin="normal"
+                name="password"
+                value={userData.password}
+                onChange={handleInputChange}
+                type="text"
+                id="outlined-size-small"
+                size='small'
+                sx={{ marginTop: 0 }}
+              />
+             
+
         </div>
         </Stack>
         </Box>

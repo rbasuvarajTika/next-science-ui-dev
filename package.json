@@ -19,6 +19,7 @@
     "react-proxy": "^1.1.8",
     "react-router-dom": "^6.15.0",
     "react-scripts": "^5.0.1",
+    "use-history": "^1.4.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -45,5 +46,4 @@
       "last 1 safari version"
     ]
   }
-  
 }

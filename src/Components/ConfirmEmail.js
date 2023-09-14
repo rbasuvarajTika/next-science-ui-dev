@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import axios from 'axios';
 
 export default function ConfirmEmail({ onNext }) {
   const [email, setEmail] = useState('');
@@ -10,14 +11,21 @@ export default function ConfirmEmail({ onNext }) {
     setEmail(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if the email exists in the database
-    // If the email exists, proceed to the next step
-    // You can implement this logic as needed
+    try {
+      // Send a POST request to your API with the email data
+      await axios.post('/api/v1/notification/emails/forgotpassword', {
+        email: email,
+      });
 
-    onNext(); // Call the onNext callback to move to the next step
+      // If the request is successful, call the onNext callback to move to the next step
+      onNext();
+    } catch (error) {
+      // Handle errors, e.g., show an error message to the user
+      console.error('Error sending confirmation email:', error);
+    }
   };
 
   return (
@@ -33,16 +41,16 @@ export default function ConfirmEmail({ onNext }) {
             value={email}
             onChange={handleEmailChange}
             required
-            size="small" // Set the size to medium
-            sx={{ width: '50%', marginBottom: '16px' }} // Adjust the styling
+            size="small"
+            sx={{ width: '50%', marginBottom: '16px' }}
           />
           <Button
             type="submit"
             variant="contained"
             color="primary"
             fullWidth
-            size="large" // Set the size to medium
-             sx={{ width: '20%', marginBottom: '16px' }}
+            size="large"
+            sx={{ width: '20%', marginBottom: '16px' }}
           >
             Next
           </Button>

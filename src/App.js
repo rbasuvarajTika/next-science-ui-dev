@@ -32,7 +32,7 @@ function App() {
       element: <ResetPassword/>,
     },
     {
-      path: "/edituser",
+      path:"/edit-user/:userId",
       element: <EditUser/>,
     },
     {

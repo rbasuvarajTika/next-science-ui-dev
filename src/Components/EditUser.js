@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -9,19 +10,62 @@ import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
-import axios from 'axios';
+import { useParams, useLocation } from 'react-router-dom';
 
 export default function EditUser() {
+  const { userId } = useParams(); // Get the user ID from route parameters
+  const location = useLocation();
+  const selectedUser = location.state?.user || null;
   const [alignment, setAlignment] = React.useState('web');
-  const [userData, setUserData] = React.useState({
+  const [userData, setUserData] = React.useState(selectedUser || {
     userName: '',
     firstName: '',
     lastName: '',
     phone: '',
     email: '',
     address: '',
-    password:''
+    password: '',
   });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        let userDataToSet = selectedUser || { // Use selectedUser if available, otherwise initialize with empty values
+          userName: '',
+          firstName: '',
+          lastName: '',
+          phone: '',
+          email: '',
+          address: '',
+          password: '',
+        };
+
+        if (!selectedUser && userId) {
+          // Fetch user data only when userId is available and selectedUser is not set
+          const response = await axios.get(`/api/v1/users/user/${userId}`, config);
+          if (response.status === 200) {
+            userDataToSet = response.data.data.data; // Assuming the response contains user data
+          } else {
+            // Handle errors
+          }
+        }
+
+        setUserData(userDataToSet);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        // Handle network or other errors
+      }
+    };
+
+    fetchUserData();
+  }, [userId, selectedUser]);
 
   const handleChange = (event, newAlignment) => {
     setAlignment(newAlignment);
@@ -31,30 +75,30 @@ export default function EditUser() {
     try {
       const token = localStorage.getItem('token');
 
-      //Include the token in the request headers
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-
         },
-        
       };
-     // const url = `http://localhost:3000/posts/${userData.userId}`;
-      const response = await axios.put(`/api/v1/users/update/user/${userData.userName}`, userData,config);
+
+      const response = await axios.put(
+        `/api/v1/users/update/user/${userId}`,
+        userData,
+        config
+      );
 
       if (response.status === 201) {
-        // User was successfully created (assuming you return a 201 status code)
+        // User was successfully updated
         // You can handle success here, e.g., show a success message
       } else {
         // Handle errors, e.g., show an error message
       }
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error('Error updating user:', error);
       // Handle network or other errors
     }
   };
 
-  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -87,15 +131,15 @@ export default function EditUser() {
           >
             Edit User - Admin Page
           </Button>
-          <Stack spacing={4} direction="row" sx={{ marginTop: '20px' }}>
+          <Stack spacing={4} direction="row">
             <div>
               <p className="fieldLabel">User ID</p>
               <TextField
                 margin="normal"
-                name="userName"
+                name="username"
                 type="text"
                 label="User ID"
-                value={userData.userName}
+                value={userData.username}
                 onChange={handleInputChange}
               />
             </div>
