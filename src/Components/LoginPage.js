@@ -76,7 +76,7 @@ export default function LoginPage() {
           <Box component="form" noValidate sx={{ mt: 1 }}>
             <div style={{ width: '100%' }}>
               <div style={{ width: '30%', float: 'left', lineHeight: '85px' }}>
-                <label>UserId</label>
+                <label>User ID</label>
               </div>
               <TextField
                 margin="normal"
@@ -84,7 +84,7 @@ export default function LoginPage() {
                 fullWidth
                 id="outlined-size-small"
                 name="email"
-                autoComplete="email"
+                autoComplete="off"
                 autoFocus
                 sx={{ width: '70%', float: 'right', borderRadius: '10px' }}
                 value={email}
@@ -102,7 +102,7 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 id="outlined-size-small"
-                autoComplete="current-password"
+                autoComplete="off"
                 sx={{ width: '70%', float: 'right', borderRadius: '10px' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -114,9 +114,7 @@ export default function LoginPage() {
                   control={<Checkbox value="remember" color="primary" />}
                   label="Remember me"
                 />
-              </Grid>
-              <Grid item xs>
-                <Link href="#" to='/confirmemail'>
+                <Link href="#" to='/confirmemail' color="primary">
                   Forgot UserId/Password
                 </Link>
               </Grid>

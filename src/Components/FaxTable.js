@@ -12,6 +12,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import PagingTabs from './PagingTabs';
  import TextField from '@mui/material/TextField';
+ import { Link } from 'react-router-dom';
 
 
 const columns = [
@@ -28,6 +29,7 @@ export function FaxTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [faxes, setFaxes] = useState([]); // State to hold fax data from the API
   const [searchFax, setSearchFax] = useState(''); // State for search input
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,7 +122,27 @@ export function FaxTable() {
                       key={fax.faxId}
                     >
                       {columns.map((column) => {
-                        const value = fax[column.id];
+                         const value = fax[column.id];
+                        if (column.id === 'faxId') {
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                            <Link
+                              to={`/faxview/${fax.faxId}`}
+                              state={{
+                                faxId: fax.faxId,
+                                caseId: fax.caseId,
+                                faxStatus: fax.faxStatus,
+                                mainFaxId: fax.mainFaxId,
+                                faxDate: fax.faxDate,
+                                faxNumber: fax.faxNumber,
+                              }}
+                            >
+                              {value}
+                            </Link>
+                          </TableCell>
+                          );
+                        }
+                       
                         return (
                           <TableCell key={column.id} align={column.align}>
                             {value}
@@ -142,6 +164,7 @@ export function FaxTable() {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
+
       </Paper>
     </>
   );

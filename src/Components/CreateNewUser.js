@@ -22,7 +22,8 @@ export default function CreateNewUser() {
     email: '',
     address: '',
     password: '', 
-      
+    type:'Standard',
+    role:'DM',
   });
 
 
@@ -44,8 +45,9 @@ export default function CreateNewUser() {
       console.log(config);
       const response = await axios.post('/api/v1/users/create/user', userData, config);
 
-      if (response.status === 201) {
-        toast.success('Updated user')
+      if (response.status === 201 || response.status === 200) {
+        alert('User Created Successfully');
+        window.location.href = '/AdminPage';
         // User was successfully created (assuming you return a 201 status code)
         // You can handle success here, e.g., show a success message
       } else {
@@ -68,7 +70,7 @@ export default function CreateNewUser() {
 
     // Set default values of null for fields that are not in the form
     const fieldsNotInForm = [
-      'middleName','confirmPassword','otherPassword','passwordUpdatedDate','role','type',
+      'middleName','confirmPassword','otherPassword','passwordUpdatedDate',
       'city','state','zip','image','salesForce','createdUser','createdDate','updatedUser','updateDate'
     ];
 
@@ -158,10 +160,9 @@ export default function CreateNewUser() {
               />
             </div>
           </Stack>
-          <p style={{ textAlign: 'left' }}>Secondary Email</p>
           <Stack spacing={4} direction="row">
             <div>
-              <p className='fieldLabel'>Email:</p>
+              <p className='fieldLabel'>Secondary Email:</p>
               <TextField
                 margin="normal"
                 name="email"
@@ -187,19 +188,14 @@ export default function CreateNewUser() {
                 sx={{ marginTop: 0 }}
               />
             </div>
-            <div></div>
-
             <div>
-              <p>Std Login Pwd:</p>
-            </div>
-            <div>
-              <p></p>
+            <p className='fieldLabel'>Password:</p>
               <TextField
                 margin="normal"
                 name="password"
                 value={userData.password}
                 onChange={handleInputChange}
-                type="text"
+                type="password"
                 id="outlined-size-small"
                 size='small'
                 sx={{ marginTop: 0 }}

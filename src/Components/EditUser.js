@@ -52,7 +52,7 @@ export default function EditUser() {
           // Fetch user data only when userId is available and selectedUser is not set
           const response = await axios.get(`/api/v1/users/user/${userId}`, config);
           if (response.status === 200) {
-            alert('Updated user Sucessfully')
+            alert('User Created Successfully');
             userDataToSet = response.data.data.data; // Assuming the response contains user data
            
           } else {
@@ -91,9 +91,11 @@ export default function EditUser() {
         config
       );
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         // User was successfully updated
         // You can handle success here, e.g., show a success message
+        alert('User Updated Successfully');
+        window.location.href = '/AdminPage';
       } else {
         // Handle errors, e.g., show an error message
       }
@@ -129,12 +131,8 @@ export default function EditUser() {
           <ToggleButton value="SAML">SAML</ToggleButton>
         </ToggleButtonGroup>
         <Box sx={{}}>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: '#9e9e9e', color: 'black' }}
-          >
-            Edit User - Admin Page
-          </Button>
+          <Button variant="contained" sx={{ backgroundColor: "#8bc34a", color: "black" }}>Edit User</Button>
+          <p style={{ textAlign: 'left' }}>Primary Email</p>
           <Stack spacing={4} direction="row">
             <div>
               <p className="fieldLabel">User ID</p>
@@ -145,6 +143,7 @@ export default function EditUser() {
                 label="User ID"
                 value={userData.username}
                 onChange={handleInputChange}
+                sx={{ marginTop: 0 }}
               />
             </div>
 
@@ -157,6 +156,7 @@ export default function EditUser() {
                 label="First Name"
                 value={userData.firstName}
                 onChange={handleInputChange}
+                sx={{ marginTop: 0 }}
               />
             </div>
             <div>
@@ -168,6 +168,7 @@ export default function EditUser() {
                 label="Last Name"
                 value={userData.lastName}
                 onChange={handleInputChange}
+                sx={{ marginTop: 0 }}
               />
             </div>
             <div>
@@ -179,6 +180,7 @@ export default function EditUser() {
                 label="Phone"
                 value={userData.phone}
                 onChange={handleInputChange}
+                sx={{ marginTop: 0 }}
               />
             </div>
           </Stack>
@@ -192,13 +194,11 @@ export default function EditUser() {
                 label="Address"
                 value={userData.address}
                 onChange={handleInputChange}
+                sx={{ marginTop: 0 }}
               />
             </div>
-
             <div>
-              <p>Enter New Password:</p>
-            </div>
-            <div>
+            <p>Enter New Password:</p>
               <TextField
                 margin="normal"
                 name="password"
@@ -206,12 +206,13 @@ export default function EditUser() {
                 label="New Password"
                 value={userData.password}
                 onChange={handleInputChange}
+                sx={{ marginTop: 0 }}
               />
             </div>
           </Stack>
         </Box>
         <Divider light />
-        <Stack spacing={4} direction="row" sx={{ marginTop: '20px' }}>
+        {/* <Stack spacing={4} direction="row" sx={{ marginTop: '20px' }}>
           <p>Current Status</p>
           <Button
             type="button"
@@ -248,12 +249,12 @@ export default function EditUser() {
           >
             Unlock User
           </Button>
-        </Stack>
+        </Stack> */}
         <Button
           type="button"
           variant="outlined"
           className="border"
-          sx={{ mt: 3, mb: 2, backgroundColor: 'blue', color: 'black' }}
+          sx={{ mt: 3, mb: 2, backgroundColor: '#ba000d', color: 'black' }}
           onClick={updateUser}
         >
           Submit

@@ -23,31 +23,31 @@ const columns = [
   {
     id: 'phone',
     label: 'Phone',
-    minWidth: 170,
+    minWidth: 100,
     align: 'right',
   },
   {
     id: 'role',
     label: 'Role',
-    minWidth: 170,
+    minWidth: 100,
     align: 'right',
   },
   {
     id: 'userType',
     label: 'Type',
-    minWidth: 170,
+    minWidth: 100,
     align: 'right',
   },
   {
     id: 'status',
     label: 'Status',
-    minWidth: 170,
+    minWidth: 100,
     align: 'right',
   },
   {
     id: 'edit',
     label: 'Edit',
-    minWidth: 100,
+    minWidth: 60,
     align: 'center',
   },
 ];

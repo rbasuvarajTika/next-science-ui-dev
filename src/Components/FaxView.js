@@ -6,30 +6,55 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { Button, Paper, Typography, Grid } from '@mui/material';
 import PagingTabs from './PagingTabs';
+import { useParams, useLocation } from 'react-router-dom';
 
 export default function FaxView({ onReset }) {
+  const { faxId } = useParams(); // Get the user ID from route parameters
+  const location = useLocation();
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
   ).toString();
 
-  const [numPages, setNumPages] = useState();
+  const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pdfResponse, setPdfResponse] = useState();
+  const [pdfResponse, setPdfResponse] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [error, setError] = useState(null);
+  const [faxDetails, setFaxDetails] = useState(null);
+  //const faxData = location.state ? location.state.faxData : null;
+  const faxData = location.state;
+
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
 
   useEffect(() => {
-    axios({
-      method: 'GET',
-      url: '/fax/faxPdf',
-      responseType: 'arraybuffer',
-    })
-      .then((response) => setPdfResponse(response.data));
-  }, []);
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      axios({
+        method: 'GET',
+        url: `/fax/getFaxPdf/${faxId}`,
+        responseType: 'arraybuffer',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          console.log('PDF Response:', response.data);
+          setPdfResponse(response.data);
+          setError(null); // Clear any previous errors on successful response
+        })
+        .catch((error) => {
+          setError('Error fetching PDF. Please try again later.');
+          console.error('Error fetching PDF:', error);
+        });
+    } else {
+      setError('Authentication token not available. Please log in.');
+    }
+  }, [faxId]);
 
   const handleNextPage = () => {
     if (pageNumber < numPages) {
@@ -73,36 +98,64 @@ export default function FaxView({ onReset }) {
 
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
-      <PagingTabs />
+    <PagingTabs />
+    <div
+      style={{
+        position: 'absolute',
+        top: '1rem', // Adjust the top position as needed
+        left: '1rem', // Adjust the left position as needed
+        zIndex: 2,
+      }}
+    >
+    <Typography variant="h6" align="center">
+      Fax ID: {faxId}
+    </Typography>
+    {faxData && (
+  <div>
+    <Typography variant="body1" align="center">
+      Case ID: {faxData.caseId}
+    </Typography>
+    <Typography variant="body1" align="center">
+      Fax Status: {faxData.faxStatus}
+    </Typography>
+    {/* Display other fax details here */}
+    <Typography variant="body1" align="center">
+      Main Fax ID: {faxData.mainFaxId}
+    </Typography>
+    <Typography variant="body1" align="center">
+      Fax Date: {faxData.faxDate}
+    </Typography>
+    <Typography variant="body1" align="center">
+      Fax Number: {faxData.faxNumber}
+    </Typography>
+  </div>
+  
+    )}
+</div>
       <div
         style={{
           position: 'absolute',
           top: '10rem',
           left: '20rem',
           zIndex: 1,
-          
-          
         }}
       >
         <Button
           variant="contained"
           onClick={handleZoomIn}
           disabled={zoomLevel >= 2}
-          size='small'
+          size="small"
           style={{
             margin: '1rem',
-
-        
-        
-        }}
+          }}
         >
           +
         </Button>
-        <br/>
+        <br />
         <Button
           variant="contained"
           onClick={handleZoomOut}
-          size='small'
+          size="small"
           disabled={zoomLevel <= 0.5}
         >
           -
@@ -114,16 +167,24 @@ export default function FaxView({ onReset }) {
           padding: '20px',
           maxWidth: '300px',
           margin: 'auto',
-          transform: `scale(${zoomLevel})`, // Apply zoom level to page content
-          transformOrigin: 'top left', // Zoom from the top left corner
+          transform: `scale(${zoomLevel})`,
+          transformOrigin: 'top left',
         }}
       >
-        <Document file={pdfResponse} onLoadSuccess={onDocumentLoadSuccess}>
-          <Page pageNumber={pageNumber} width={300} />
-        </Document>
-        <Typography variant="body1" align="center">
-          Page {pageNumber} of {numPages}
-        </Typography>
+        {pdfResponse ? (
+          <Document file={pdfResponse} onLoadSuccess={onDocumentLoadSuccess}>
+            <Page pageNumber={pageNumber} width={300} />
+          </Document>
+        ) : (
+          <Typography variant="body1" align="center" color="error">
+            {error || 'Loading PDF...'}
+          </Typography>
+        )}
+        {numPages && (
+          <Typography variant="body1" align="center">
+            Page {pageNumber} of {numPages}
+          </Typography>
+        )}
         <Grid container justifyContent="space-between" spacing={2}>
           <Grid item>
             <Button

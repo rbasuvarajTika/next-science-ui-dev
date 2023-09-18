@@ -10,6 +10,7 @@ import ConfirmEmail from './Components/ConfirmEmail';
 import FaxView from './Components/FaxView';
 import EditUser from './Components/EditUser';
 import CreateNewUser from './Components/CreateNewUser';
+import { DuplicateFax } from './Components/DuplicateFax';
 function App() {
   const router = createBrowserRouter([
     {
@@ -21,7 +22,7 @@ function App() {
         element: <ConfirmEmail/>,
      },
      {
-      path: "/faxview",
+      path: "/faxview/:faxId",
       element: <FaxView/>,
     },
     {
@@ -43,6 +44,10 @@ function App() {
     {
       path: "/createnewuser",
       element: <CreateNewUser/>,
+    },
+    {
+      path: "/duplicatefax",
+      element: <DuplicateFax/>,
     },
   ]);
   return (

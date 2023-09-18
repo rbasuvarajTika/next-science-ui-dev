@@ -54,18 +54,19 @@ export default function AdminPage() {
       width: '80%',
     }}>
      
-      <Stack spacing={2} direction="row" sx={{float:"right"}}>
+      <Stack spacing={1} direction="row" sx={{float:"right"}}>
       <TextField
               margin="normal"
               name="Search User"
               label="Serach User"
               type="text"
-              id="outlined-size-small"
+              id="outlined-basic"
               value={searchUser}
               onChange={handleChange}
-            />
+       />
              <Link href="#" to='/createnewuser'> <Button variant="contained" style={{backgroundColor :'#ff5722', color:"#000"}}>Create New User</Button></Link>
-            <Button variant="contained" style={{backgroundColor :'#ffc400', color:"#000"}}>Report Fields</Button>
+           {/*  <Button variant="contained" style={{backgroundColor :'#ffc400', color:"#000"}}>Report Fields</Button> */}
+            <Link href="#"> <Button variant="contained" style={{backgroundColor :'#ffc400', color:"#000"}}>Report Fields</Button></Link>
       </Stack>
 
     </Box>
