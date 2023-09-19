@@ -7,6 +7,9 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import { Button, Paper, Typography, Grid } from '@mui/material';
 import PagingTabs from './PagingTabs';
 import { useParams, useLocation } from 'react-router-dom';
+import FaxDetails from './FaxDetails';
+
+
 
 export default function FaxView({ onReset }) {
   const { faxId } = useParams(); // Get the user ID from route parameters
@@ -36,7 +39,7 @@ export default function FaxView({ onReset }) {
     if (token) {
       axios({
         method: 'GET',
-        url: `/fax/getFaxPdf/${faxId}`,
+        url: `/api/v1/fax/getFaxPdf/${faxId}`,
         responseType: 'arraybuffer',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -99,38 +102,17 @@ export default function FaxView({ onReset }) {
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
     <PagingTabs />
+   
     <div
       style={{
         position: 'absolute',
-        top: '1rem', // Adjust the top position as needed
-        left: '1rem', // Adjust the left position as needed
+        top: '10em', // Adjust the top position as needed
+        left: '5rem', // Adjust the left position as needed
         zIndex: 2,
       }}
     >
-    <Typography variant="h6" align="center">
-      Fax ID: {faxId}
-    </Typography>
-    {faxData && (
-  <div>
-    <Typography variant="body1" align="center">
-      Case ID: {faxData.caseId}
-    </Typography>
-    <Typography variant="body1" align="center">
-      Fax Status: {faxData.faxStatus}
-    </Typography>
-    {/* Display other fax details here */}
-    <Typography variant="body1" align="center">
-      Main Fax ID: {faxData.mainFaxId}
-    </Typography>
-    <Typography variant="body1" align="center">
-      Fax Date: {faxData.faxDate}
-    </Typography>
-    <Typography variant="body1" align="center">
-      Fax Number: {faxData.faxNumber}
-    </Typography>
-  </div>
-  
-    )}
+         {faxData && <FaxDetails faxData={faxData} />}
+   
 </div>
       <div
         style={{

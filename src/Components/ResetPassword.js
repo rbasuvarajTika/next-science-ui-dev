@@ -47,6 +47,7 @@ export default function ResetPassword({ onReset }) {
   };
 
   return (
+    
     <div className="reset-password-container">
       <Paper elevation={3} className="reset-password-form">
         <h2>Reset Password</h2>

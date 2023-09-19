@@ -11,9 +11,9 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import PagingTabs from './PagingTabs';
- import TextField from '@mui/material/TextField';
- import { Link } from 'react-router-dom';
-
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete'; // Import Autocomplete
+import { Link } from 'react-router-dom';
 
 const columns = [
   { id: 'faxId', label: 'Fax ID', minWidth: 170 },
@@ -29,7 +29,7 @@ export function FaxTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [faxes, setFaxes] = useState([]); // State to hold fax data from the API
   const [searchFax, setSearchFax] = useState(''); // State for search input
-  
+  const [selectedFaxStatus, setSelectedFaxStatus] = useState(''); // State for selected faxStatus
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +41,7 @@ export function FaxTable() {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get('/fax/faxList', config);
+        const response = await axios.get('/api/v1/fax/faxList', config);
         setFaxes(response.data.data.data); // Update state with the fetched data
         console.log(response.data);
       } catch (error) {
@@ -64,13 +64,15 @@ export function FaxTable() {
   // Add a function to handle search input changes
   const handleSearchChange = (e) => {
     const searchText = e.target.value.toLowerCase();
-    setSearchFax(searchText); // Update the searchFax state
+    setSearchFax(searchText); // Update the searchFax state with the search query
+    setPage(0);
   };
 
-  // Filter faxes based on the search input
-  const filteredFaxes = faxes.filter((fax) =>
-    String(fax.faxId).toLowerCase().includes(searchFax)
-  );
+  // Add a function to handle faxStatus selection
+  const handleFaxStatusChange = (event, newValue) => {
+    setSelectedFaxStatus(newValue === "All Status" ? "" : newValue); // Update the selectedFaxStatus state
+    setPage(0);
+  };
 
   return (
     <>
@@ -83,8 +85,21 @@ export function FaxTable() {
         <Button variant="contained">Fax List</Button>
       </Box>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <Box sx={{ width: '100%', marginBottom: '16px' }}>
-          {/* Add the search input */}
+        <Box sx={{  display: 'flex',
+                justifyContent: 'space-between', // Align items to the right
+                alignItems: 'center', // Center vertically
+                width: '90%',
+                marginBottom: '16px', }}>
+          <Autocomplete
+           sx={{ width: '20%',  }}
+            id="faxStatus-filter"
+            options={top100Films.map((film) => film.label)}
+            value={selectedFaxStatus}
+            onChange={handleFaxStatusChange}
+            renderInput={(params) => (
+              <TextField {...params} label="Filter by Fax Status" />
+            )}
+          />
           <TextField
             margin="normal"
             name="Search Fax"
@@ -111,9 +126,25 @@ export function FaxTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredFaxes
+              {faxes
+                .filter((fax) =>
+                  fax.faxId.toLowerCase().includes(searchFax.toLowerCase())
+                )
+                .filter((fax) =>
+                  selectedFaxStatus
+                    ? fax.faxStatus === selectedFaxStatus
+                    : true
+                )
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((fax) => {
+                  let linkTo = ''; // Define linkTo here
+
+                  if (fax.faxStatus === 'Main' || fax.faxStatus === 'New') {
+                    linkTo = `/faxview/${fax.faxId}`;
+                  } else if (fax.faxStatus === 'Duplicate') {
+                    linkTo = `/duplicatefax/${fax.faxId}`;
+                  }
+
                   return (
                     <TableRow
                       hover
@@ -122,27 +153,32 @@ export function FaxTable() {
                       key={fax.faxId}
                     >
                       {columns.map((column) => {
-                         const value = fax[column.id];
+                        const value = fax[column.id];
+
                         if (column.id === 'faxId') {
                           return (
                             <TableCell key={column.id} align={column.align}>
-                            <Link
-                              to={`/faxview/${fax.faxId}`}
-                              state={{
-                                faxId: fax.faxId,
-                                caseId: fax.caseId,
-                                faxStatus: fax.faxStatus,
-                                mainFaxId: fax.mainFaxId,
-                                faxDate: fax.faxDate,
-                                faxNumber: fax.faxNumber,
-                              }}
-                            >
-                              {value}
-                            </Link>
-                          </TableCell>
+                              {linkTo ? (
+                                <Link
+                                  to={linkTo}
+                                  state={{
+                                    faxId: fax.faxId,
+                                    caseId: fax.caseId,
+                                    faxStatus: fax.faxStatus,
+                                    mainFaxId: fax.mainFaxId,
+                                    faxDate: fax.faxDate,
+                                    faxNumber: fax.faxNumber,
+                                  }}
+                                >
+                                  {value}
+                                </Link>
+                              ) : (
+                                value
+                              )}
+                            </TableCell>
                           );
                         }
-                       
+
                         return (
                           <TableCell key={column.id} align={column.align}>
                             {value}
@@ -158,14 +194,19 @@ export function FaxTable() {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={filteredFaxes.length}
+          count={faxes.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-
       </Paper>
     </>
   );
 }
+const top100Films = [
+  { label: 'All Status', year: 1994 },
+  { label: 'New', year: 1972 },
+  { label: 'Main', year: 1974 },
+  { label: 'Duplicate', year: 1974 },
+];

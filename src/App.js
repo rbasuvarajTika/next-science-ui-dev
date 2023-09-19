@@ -46,7 +46,7 @@ function App() {
       element: <CreateNewUser/>,
     },
     {
-      path: "/duplicatefax",
+      path: "/duplicatefax/:faxId",
       element: <DuplicateFax/>,
     },
   ]);

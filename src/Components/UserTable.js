@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Link ,useNavigate  } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const columns = [
   { id: 'username', label: 'User Id', minWidth: 170 },
@@ -18,7 +18,6 @@ const columns = [
     label: 'Last name',
     minWidth: 170,
     align: 'right',
-    
   },
   {
     id: 'phone',
@@ -39,7 +38,7 @@ const columns = [
     align: 'right',
   },
   {
-    id: 'status',
+    id: 'userStatusFlag',
     label: 'Status',
     minWidth: 100,
     align: 'right',
@@ -56,9 +55,10 @@ export default function UserTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [users, setUsers] = useState([]);
-   // State to store the selected user for editing
-  const user = props.searchUser;
+  const [loading, setLoading] = useState(true);
 
+  const user = props.searchUser;
+  const statusFilter = props.statusFilter;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,10 +71,11 @@ export default function UserTable(props) {
         };
         const response = await axios.get('/api/v1/users/userList', config);
         setUsers(response.data.data.data);
+        setLoading(false);
         console.log(response.data.data.data);
-
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLoading(false);
       }
     };
 
@@ -90,11 +91,11 @@ export default function UserTable(props) {
     setPage(0);
   };
 
-  //  const handleEditClick = (row) => {
-  //    setSelectedUser(row);
-  //    navigate(`/edituser/${row.userId}`); // Set the selected user for editing
-  //    console.log(navigate);
-  //  };
+  const filteredUsers = users ? users : [];
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -114,8 +115,18 @@ export default function UserTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users
+            {filteredUsers
               .filter((item) => String(item.username).toLowerCase().includes(user))
+              .filter((item) => {
+                if (statusFilter === 'All Users') {
+                  return true;
+                } else if (statusFilter === 'Active Users') {
+                  return item.userStatusFlag === 'Active';
+                } else if (statusFilter === 'Deactivated Users') {
+                  return item.userStatusFlag === 'Deactivated';
+                }
+                return false;
+              })
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
@@ -124,7 +135,9 @@ export default function UserTable(props) {
                       if (column.id === 'edit') {
                         return (
                           <TableCell key={column.id} align={column.align}>
-                       <Link to={`/edit-user/${row.userId}`} state={{ user: row  }}>   <button >Edit</button></Link>
+                            <Link to={`/edit-user/${row.userId}`} state={{ user: row }}>
+                              <button>Edit</button>
+                            </Link>
                           </TableCell>
                         );
                       }
@@ -144,7 +157,7 @@ export default function UserTable(props) {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={users.length}
+        count={filteredUsers.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
