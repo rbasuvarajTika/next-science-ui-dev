@@ -16,12 +16,13 @@ import Autocomplete from '@mui/material/Autocomplete'; // Import Autocomplete
 import { Link } from 'react-router-dom';
 
 const columns = [
-  { id: 'faxId', label: 'Fax ID', minWidth: 170 },
-  { id: 'caseId', label: 'Case ID', minWidth: 170 },
+  { id: 'faxId', label: 'Fax ID', minWidth: 150 },
+  { id: 'caseId', label: 'Case ID', minWidth: 100 },
   { id: 'faxStatus', label: 'Fax Status', minWidth: 170 },
-  { id: 'mainFaxId', label: 'Main Fax ID', minWidth: 170 },
+  { id: 'dupeFaxId', label: 'Main Fax ID', minWidth: 170 },
   { id: 'faxDate', label: 'Fax Date', minWidth: 170 },
   { id: 'faxNumber', label: 'Fax Number', minWidth: 170 },
+  { id: 'ocrStatus', label: 'Ocr Status', minWidth: 100 },
 ];
 
 export function FaxTable() {
@@ -29,7 +30,7 @@ export function FaxTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [faxes, setFaxes] = useState([]); // State to hold fax data from the API
   const [searchFax, setSearchFax] = useState(''); // State for search input
-  const [selectedFaxStatus, setSelectedFaxStatus] = useState(''); // State for selected faxStatus
+  const [selectedOcrStatus, setSelectedOcrStatus] = useState(''); // State for selected ocrStatus
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,9 +69,9 @@ export function FaxTable() {
     setPage(0);
   };
 
-  // Add a function to handle faxStatus selection
-  const handleFaxStatusChange = (event, newValue) => {
-    setSelectedFaxStatus(newValue === "All Status" ? "" : newValue); // Update the selectedFaxStatus state
+  // Add a function to handle ocrStatus selection
+  const handleOcrStatusChange = (event, newValue) => {
+    setSelectedOcrStatus(newValue === "All Status" ? "" : newValue); // Update the selectedOcrStatus state
     setPage(0);
   };
 
@@ -91,13 +92,14 @@ export function FaxTable() {
                 width: '90%',
                 marginBottom: '16px', }}>
           <Autocomplete
-           sx={{ width: '20%',  }}
-            id="faxStatus-filter"
+            sx={{ width: '20%' }}
+            id="ocrStatus-filter"
             options={top100Films.map((film) => film.label)}
-            value={selectedFaxStatus}
-            onChange={handleFaxStatusChange}
+            value={selectedOcrStatus}
+            onChange={handleOcrStatusChange}
+            size='small'
             renderInput={(params) => (
-              <TextField {...params} label="Filter by Fax Status" />
+              <TextField {...params} label="Filter by OCR Status" />
             )}
           />
           <TextField
@@ -107,6 +109,7 @@ export function FaxTable() {
             type="text"
             id="outlined-size-small"
             value={searchFax}
+            size='small'
             onChange={handleSearchChange}
           />
         </Box>
@@ -131,8 +134,8 @@ export function FaxTable() {
                   fax.faxId.toLowerCase().includes(searchFax.toLowerCase())
                 )
                 .filter((fax) =>
-                  selectedFaxStatus
-                    ? fax.faxStatus === selectedFaxStatus
+                  selectedOcrStatus
+                    ? fax.ocrStatus === selectedOcrStatus
                     : true
                 )
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -165,9 +168,10 @@ export function FaxTable() {
                                     faxId: fax.faxId,
                                     caseId: fax.caseId,
                                     faxStatus: fax.faxStatus,
-                                    mainFaxId: fax.mainFaxId,
+                                    mainFaxId: fax.dupeFaxId,
                                     faxDate: fax.faxDate,
                                     faxNumber: fax.faxNumber,
+                                    ocrStatus: fax.ocrStatus
                                   }}
                                 >
                                   {value}
@@ -206,7 +210,6 @@ export function FaxTable() {
 }
 const top100Films = [
   { label: 'All Status', year: 1994 },
-  { label: 'New', year: 1972 },
-  { label: 'Main', year: 1974 },
-  { label: 'Duplicate', year: 1974 },
+  { label: 'Complete', year: 1972 },
+  { label: 'Incomplete', year: 1974 },
 ];

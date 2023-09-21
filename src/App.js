@@ -11,6 +11,7 @@ import FaxView from './Components/FaxView';
 import EditUser from './Components/EditUser';
 import CreateNewUser from './Components/CreateNewUser';
 import { DuplicateFax } from './Components/DuplicateFax';
+import RxTracker from './Components/RxTracker';
 function App() {
   const router = createBrowserRouter([
     {
@@ -48,6 +49,10 @@ function App() {
     {
       path: "/duplicatefax/:faxId",
       element: <DuplicateFax/>,
+    },
+    {
+      path: "/rxlist",
+      element: <RxTracker/>,
     },
   ]);
   return (

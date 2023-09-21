@@ -6,13 +6,14 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { Button, Paper, Typography, Grid } from '@mui/material';
 import PagingTabs from './PagingTabs';
-import { useParams,useLocation  } from 'react-router-dom';
-import FaxDetails from './FaxDetails';
+import { useParams } from 'react-router-dom';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+
 
 export function DuplicateFax({ onReset }) {
-  const { faxId, duplicateFaxId } = useParams(); // Get both fax IDs from route parameters
-  const location = useLocation();
+  const { faxId, duplicateFaxId } = useParams(); // Get the fax IDs from route parameters
 
+  // Set the PDF worker source
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
@@ -24,6 +25,7 @@ export function DuplicateFax({ onReset }) {
   const [pdfResponse, setPdfResponse] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [error, setError] = useState(null);
+  const [mainFaxData, setMainFaxData] = useState(null);
 
   // Duplicate PDF states and functions
   const [duplicateNumPages, setDuplicateNumPages] = useState(null);
@@ -31,82 +33,79 @@ export function DuplicateFax({ onReset }) {
   const [duplicatePdfResponse, setDuplicatePdfResponse] = useState(null);
   const [duplicateZoomLevel, setDuplicateZoomLevel] = useState(1);
   const [duplicateError, setDuplicateError] = useState(null);
+  const [duplicateFaxData, setDuplicateFaxData] = useState(null);
+  // Function to fetch PDF data for both main and duplicate fax
+  const fetchPdfData = () => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      axios({
+        method: 'GET',
+        url: `/api/v1/fax/faxDupeById/${faxId}`, // Use the endpoint that provides both IDs
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          const mainFaxId = response.data.data[0].faxId;
+          const duplicateFaxId = response.data.data[1].faxId;
+          console.log(mainFaxId);
+          console.log(duplicateFaxId);
+          console.log(response.data.data[0]);
+          console.log(response.data.data[1]);
 
 
-  const faxData = location.state;
+          // Fetch main fax PDF
+          axios({
+            method: 'GET',
+            url: `/api/v1/fax/getFaxPdf/${mainFaxId}`,
+            responseType: 'arraybuffer',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((mainResponse) => {
+              setPdfResponse(mainResponse.data);
+              setError(null); // Clear any previous errors on successful response
+              setMainFaxData(response.data.data[0]);
+            })
+            .catch((error) => {
+              setError('Error fetching main PDF. Please try again later.');
+              console.error('Error fetching main PDF:', error);
+            });
 
-
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-  }
-
-  function onDuplicateDocumentLoadSuccess({ numPages }) {
-    setDuplicateNumPages(numPages);
-  }
+          // Fetch duplicate fax PDF
+          axios({
+            method: 'GET',
+            url: `/api/v1/fax/getFaxPdf/${duplicateFaxId}`,
+            responseType: 'arraybuffer',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((duplicateResponse) => {
+              setDuplicatePdfResponse(duplicateResponse.data);
+              setDuplicateError(null); // Clear any previous errors on successful response
+              setDuplicateFaxData(response.data.data[1]);
+            })
+            .catch((error) => {
+              setDuplicateError('Error fetching duplicate PDF. Please try again later.');
+              console.error('Error fetching duplicate PDF:', error);
+            });
+        })
+        .catch((error) => {
+          setError('Error fetching fax IDs. Please try again later.');
+          console.error('Error fetching fax IDs:', error);
+        });
+    } else {
+      setError('Authentication token not available. Please log in.');
+    }
+  };
 
   useEffect(() => {
-    // Function to fetch PDF data for the main fax
-    const fetchMainFaxData = (faxId) => {
-      const token = localStorage.getItem('token');
-
-      if (token) {
-        axios({
-          method: 'GET',
-          url: `/api/v1/fax/getFaxPdf/1509414370`,
-          responseType: 'arraybuffer',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-          .then((response) => {
-            console.log('Main Fax PDF Response:', response.data);
-            setPdfResponse(response.data);
-            console.log(response.data);
-            setError(null); // Clear any previous errors on successful response
-          })
-          .catch((error) => {
-            setError('Error fetching Main Fax PDF. Please try again later.');
-            console.error('Error fetching Main Fax PDF:', error);
-          });
-      } else {
-        setError('Authentication token not available. Please log in.');
-      }
-    };
-
-    // Function to fetch PDF data for the duplicate fax
-    const fetchDuplicateFaxData = (duplicateFaxId) => {
-      const token = localStorage.getItem('token');
-
-      if (token) {
-        axios({
-          method: 'GET',
-          url: `/api/v1/fax/getFaxPdf/1509414999 `,
-          responseType: 'arraybuffer',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-          .then((response) => {
-            console.log('Duplicate Fax PDF Response:', response.data);
-            setDuplicatePdfResponse(response.data);
-            setDuplicateError(null); // Clear any previous errors on successful response
-         console.log(response.data);
-          })
-          .catch((error) => {
-            setDuplicateError('Error fetching Duplicate Fax PDF. Please try again later.');
-            console.error('Error fetching Duplicate Fax PDF:', error);
-          });
-      } else {
-        setDuplicateError('Authentication token not available. Please log in.');
-      }
-    };
-
-    // Fetch PDF data for the main fax
-    fetchMainFaxData(faxId);
-
-    // Fetch PDF data for the duplicate fax
-    fetchDuplicateFaxData(duplicateFaxId);
-  }, [faxId, duplicateFaxId]);
+    // Fetch PDF data for both main and duplicate fax when the component mounts
+    fetchPdfData();
+  }, []);
 
   // Original PDF functions
   const handleNextPage = () => {
@@ -157,6 +156,15 @@ export function DuplicateFax({ onReset }) {
       setDuplicateZoomLevel(duplicateZoomLevel - 0.1);
     }
   };
+  
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
+  // Function to handle the success of loading the duplicate PDF document
+  function onDuplicateDocumentLoadSuccess({ numPages }) {
+    setDuplicateNumPages(numPages);
+  }
 
   // Function to handle making the current fax the master
   const handleMakeMaster = () => {
@@ -191,6 +199,7 @@ export function DuplicateFax({ onReset }) {
 
   return (
     <>
+   
       <PagingTabs />
       <div
       style={{
@@ -198,12 +207,120 @@ export function DuplicateFax({ onReset }) {
         top: '10em', // Adjust the top position as needed
         left: '30rem', // Adjust the left position as needed
         zIndex: 1,
-        width: '19%'
+       
       }}
     >
-         {faxData && <FaxDetails faxData={faxData} />}
-         {setDuplicatePdfResponse.faxId}
-   
+         
+     <TableContainer component={Paper} elevation={3} style={{
+        position: 'absolute',
+        // Adjust the top position as needed
+         // Adjust the left position as needed
+        zIndex: 1,
+        height:'10rem',
+        width: '15rem',
+        top:'-40px'
+      }}
+    >
+  <Table aria-label="fax-details-table">
+    <TableHead>
+    <TableRow style={{background : 'green'}}>
+    <TableCell style={{align : 'center',
+    
+  
+  }}>Master</TableCell>
+    <TableCell></TableCell>
+    </TableRow>
+      <TableRow style={{background : 'grey'}}>
+        <TableCell>Detail</TableCell>
+        <TableCell>Value</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {mainFaxData && ( // Check if mainFaxData is not null before rendering
+        <>
+          <TableRow>
+            <TableCell>Fax ID</TableCell>
+            <TableCell>{mainFaxData.faxId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Case ID</TableCell>
+            <TableCell>{mainFaxData.caseId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Status</TableCell>
+            <TableCell>{mainFaxData.faxStatus}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Main Fax ID</TableCell>
+            <TableCell>{mainFaxData.mainFaxId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Date</TableCell>
+            <TableCell>{mainFaxData.faxDate}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Number</TableCell>
+            <TableCell>{mainFaxData.faxNumber}</TableCell>
+          </TableRow>
+        </>
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
+
+<TableContainer component={Paper} elevation={1}style={{
+        position: 'absolute',
+        // Adjust the top position as needed
+         // Adjust the left position as needed
+         top: '12rem',
+        zIndex: 1,
+        height:'10rem',
+        width: '15rem'
+       
+      }} >
+  <Table aria-label="fax-details-table">
+    <TableHead>
+    <TableRow style={{background : 'red'}}>
+    <TableCell>Duplicate</TableCell>
+    <TableCell></TableCell>
+    </TableRow>
+      <TableRow style={{background : 'grey'}}>
+        <TableCell>Detail</TableCell>
+        <TableCell>Value</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {duplicateFaxData && ( // Check if duplicateFaxData is not null before rendering
+        <>
+          <TableRow>
+            <TableCell>Fax ID</TableCell>
+            <TableCell>{duplicateFaxData.faxId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Case ID</TableCell>
+            <TableCell>{duplicateFaxData.caseId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Status</TableCell>
+            <TableCell>{duplicateFaxData.faxStatus}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Main Fax ID</TableCell>
+            <TableCell>{duplicateFaxData.mainFaxId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Date</TableCell>
+            <TableCell>{duplicateFaxData.faxDate}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Number</TableCell>
+            <TableCell>{duplicateFaxData.faxNumber}</TableCell>
+          </TableRow>
+        </>
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
 </div>   
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ width: '48%' }}>
@@ -287,7 +404,7 @@ export function DuplicateFax({ onReset }) {
               onClick={handleMakeMaster}
               style={{ marginTop: '16px' }}
             >
-              Make Master
+              Master
             </Button>
           </Paper>
         </div>
@@ -297,7 +414,7 @@ export function DuplicateFax({ onReset }) {
             style={{
               position: 'absolute',
               top: '10rem',
-              right: '30rem',
+              right: '1rem',
               zIndex: 1,
             }}
           >
@@ -405,8 +522,10 @@ export function DuplicateFax({ onReset }) {
               Keep Duplicate
             </Button>
           </Paper>
+          
         </div>
       </div>
     </>
+    
   );
 }

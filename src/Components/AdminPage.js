@@ -52,6 +52,7 @@ export default function AdminPage() {
             onChange={handleStatusFilterChange}
             getOptionLabel={(option) => option.label}
             renderInput={(params) => <TextField {...params} label="Users" />}
+            size='small'
           />
         </Box>
         <Box
@@ -68,6 +69,7 @@ export default function AdminPage() {
               id="outlined-basic"
               value={searchUser}
               onChange={handleChange}
+              size='small'
             />
             <Link href="#" to="/createnewuser">
               <Button variant="contained" style={{ backgroundColor: '#ff5722', color: '#000' }}>

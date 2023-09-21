@@ -59,7 +59,7 @@ const logoutHandle=()=>{
       >
        Fax List
       </Button>     </Link>
-      <Button
+      <Link className='link' to='/rxlist'>    <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -68,7 +68,7 @@ const logoutHandle=()=>{
         startIcon={<ListAltSharpIcon />}
       >
         RxTracker List
-      </Button>
+      </Button> </Link>
       <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}

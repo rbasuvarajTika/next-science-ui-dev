@@ -136,7 +136,7 @@ export default function UserTable(props) {
                         return (
                           <TableCell key={column.id} align={column.align}>
                             <Link to={`/edit-user/${row.userId}`} state={{ user: row }}>
-                              <button>Edit</button>
+                              <button >Edit</button>
                             </Link>
                           </TableCell>
                         );
