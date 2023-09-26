@@ -11,15 +11,15 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  // Custom Axios login function
+ 
+  
   const axiosLogin = async () => {
     try {
       const response = await axios.post('/api/v1/auth/signin', {
@@ -28,35 +28,33 @@ export default function LoginPage() {
       });
 
       if (response.data && response.data.token) {
-      //  localStorage.setItem('token', response.data.token);
-      const { token, role } = response.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
-      console.log(token);
-      console.log(role);
+        const { token, role } = response.data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
 
-        return true; // Successful login
+        return role; // Return the role (User or Admin)
       } else {
-        return false; // Login failed
+        return 'LoginFailed'; // Login failed
       }
     } catch (error) {
       console.error('Login error:', error);
-      return false; // Login failed
+      return 'LoginFailed'; // Login failed
     }
   };
 
-  // Handle login button click
+ 
   const handleLogin = async (event) => {
     event.preventDefault();
 
     // Call the custom Axios login function
-    const loginSuccessful = await axiosLogin();
+    const loginRole = await axiosLogin();
 
-    if (loginSuccessful) {
-      // Redirect to the AdminPage or the desired route on successful login
-      window.location.href = '/adminpage';
+    if (loginRole === 'Admin') {
+      window.location.href = '/adminpage'; // Redirect to AdminPage for Admin
+    } else if (loginRole === 'User') {
+      window.location.href = '/fax'; // Redirect to Fax page for User
     } else {
-      // Handle login failure, show an error message, etc.
+
       alert('Login failed. Incorrect Email or Password.');
     }
   };
@@ -80,6 +78,10 @@ export default function LoginPage() {
             Login
           </Typography>
           <Box component="form" noValidate sx={{ mt: 1 }}>
+            <div style={{ width: '100%' }}>
+              {/* Dropdown for selecting role */}
+         
+            </div>
             <div style={{ width: '100%' }}>
               <div style={{ width: '30%', float: 'left', lineHeight: '85px' }}>
                 <label>User ID</label>
@@ -120,7 +122,7 @@ export default function LoginPage() {
                   control={<Checkbox value="remember" color="primary" />}
                   label="Remember me"
                 />
-                <Link href="#" to='/confirmemail' color="primary">
+                <Link href="#" to="/confirmemail" color="primary">
                   Forgot UserId/Password
                 </Link>
               </Grid>

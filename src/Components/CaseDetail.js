@@ -139,6 +139,9 @@ export function CaseDetail({ onReset }) {
             variant="contained"
             onClick={handleZoomOut}
             size="small"
+            style={{
+              margin: '1rem',
+            }}
             disabled={zoomLevel <= 0.5}
           >
             -

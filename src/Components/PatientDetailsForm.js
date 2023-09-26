@@ -177,7 +177,9 @@ function PatientDetailsForm() {
               type="submit"
               variant="outlined"
               className="border"
-              style={{bottom:'2rem'}}
+              style={{bottom:'2rem',
+            left:'30rem'
+            }}
               size='small'
             >
               Add

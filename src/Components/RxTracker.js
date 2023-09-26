@@ -69,7 +69,7 @@ const columns = [
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get('/api/v1/fax/faxRxPrescriptions', config);
+        const response = await axios.get('/api/v1/fax/rxTrackerList', config);
         setData(response.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -124,13 +124,14 @@ const columns = [
               <TableBody>
                 {data
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
+                  .map((row, index) => {
                     return (
                       <TableRow
                         hover
                         role="checkbox"
                         tabIndex={-1}
-                        key={row.trnRxId} // Use a unique identifier from your data
+                       // key={row.trnRxId} // Use a unique identifier from your data
+                        key={index} 
                       >
                         {columns.map((column) => {
                           const value = row[column.id];

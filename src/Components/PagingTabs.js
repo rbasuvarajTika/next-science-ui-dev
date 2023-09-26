@@ -21,7 +21,7 @@ export default function PagingTabs() {
 //   };
 const logoutHandle=()=>{
   localStorage.clear()
-  window.location.href="/"
+  window.location.href='/'
 }
 
   return (
@@ -29,7 +29,7 @@ const logoutHandle=()=>{
         width: '100%',
         height: '100px'}}>
     <Stack spacing={2} direction="row" sx={{float:"right"}}>
-    <Link className=" link" to="/">   <Button
+    <Link className=" link" to='/'>   <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"

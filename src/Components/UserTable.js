@@ -45,7 +45,8 @@ const columns = [
   },
   {
     id: 'edit',
-    label: 'Edit',
+    //label: 'Edit',
+    label: ' ',
     minWidth: 60,
     align: 'center',
   },

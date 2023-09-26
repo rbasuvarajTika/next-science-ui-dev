@@ -99,7 +99,7 @@ export function FaxTable() {
           <Autocomplete
             sx={{ width: '20%' }}
             id="ocrStatus-filter"
-            options={top100Films.map((film) => film.label)}
+            options={['', ...top100Films.map((film) => film.label)]}
             value={selectedOcrStatus}
             onChange={handleOcrStatusChange}
             size='small'

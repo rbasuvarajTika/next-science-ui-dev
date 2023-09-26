@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './Components/LoginPage';
 import AdminPage from './Components/AdminPage';
 import { FaxTable } from './Components/FaxTable';
@@ -15,62 +15,62 @@ import PatientDetailsForm from './Components/PatientDetailsForm';
 
 function App() {
   const { userRole } = useAuth(); // Get the user's role from the context
-
-  // If userRole is null, display a loading message or indicator.
-  if (userRole === null) {
-    return <div>Loading...</div>;
+  console.log('userRole:', userRole);
+  // Check if userRole is null or not present in localStorage
+  const storedUserRole = localStorage.getItem('role');
+  if (userRole === null && !storedUserRole) {
+    return (
+      <div className="App">
+        <Router>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            {/* Handle redirection to a 404 page for unknown routes */}
+            <Route
+              path="*"
+              element={
+                <div>
+                  <p>404 - Page Not Found</p>
+                </div>
+              }
+            />
+          </Routes>
+        </Router>
+      </div>
+    );
   }
-
-  // Define common routes accessible to all users
-  const commonRoutes = [
-    {
-      path: '/',
-      component: LoginPage,
-    },
-    {
-      path: '/confirmemail',
-      component: ConfirmEmail,
-    },
-    {
-      path: '/resetpassword/:userId',
-      component: ResetPassword,
-    },
-    // Add other common routes here
-  ];
-
   // Define admin-specific routes
   const adminRoutes = [
     {
       path: '/adminpage',
-      component: AdminPage,
+      element: userRole === 'Admin' ? <AdminPage /> : <Navigate to="/" />,
     },
     {
       path: '/fax',
-      component: FaxTable,
+      element: userRole === 'User'? <FaxTable /> : <Navigate to="/" />,
     },
     {
       path: '/edit-user/:userId',
-      component: EditUser,
+      element: userRole === 'Admin' ? <EditUser /> : <Navigate to="/" />,
     },
     {
       path: '/createnewuser',
-      component: CreateNewUser,
+      element: userRole === 'Admin' ? <CreateNewUser /> : <Navigate to="/" />,
     },
     {
       path: '/duplicatefax/:faxId',
-      component: DuplicateFax,
+      element: userRole === 'Admin' ? <DuplicateFax /> : <Navigate to="/" />,
     },
     {
       path: '/rxlist',
-      component: RxTracker,
+      element: userRole === 'Admin' ? <RxTracker /> : <Navigate to="/" />,
     },
     {
       path: '/casedetail',
-      component: CaseDetail,
+      element: userRole === 'Admin' ? <CaseDetail /> : <Navigate to="/" />,
     },
     {
       path: '/patientdetails',
-      component: PatientDetailsForm,
+      element: userRole === 'Admin' ? <PatientDetailsForm /> : <Navigate to="/" />,
     },
   ];
 
@@ -78,21 +78,14 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          {commonRoutes.map((route, index) => (
-            <Route
-              key={index}
-              path={route.path}
-              element={<route.component />}
-            />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/confirmemail" element={<ConfirmEmail />} />
+          <Route path="/resetpassword/:userId" element={<ResetPassword />} />
+          {/* The "/fax" route is accessible to everyone */}
+          <Route path="/fax" element={<FaxTable />} />
+          {adminRoutes.map((route, index) => (
+            <Route key={index} path={route.path} element={route.element} />
           ))}
-          {userRole === 'Admin' &&
-            adminRoutes.map((route, index) => (
-              <Route
-                key={index}
-                path={route.path}
-                element={<route.component />}
-              />
-            ))}
           {/* Handle redirection to a 404 page for unknown routes */}
           <Route
             path="*"
