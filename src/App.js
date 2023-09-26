@@ -1,63 +1,109 @@
-import './App.css';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './Components/LoginPage';
-// import PagingTabs from './Components/PagingTabs';
-// import UserTable from './Components/UserTable';
 import AdminPage from './Components/AdminPage';
-import { FaxTable } from './Components/FaxTable'; 
+import { FaxTable } from './Components/FaxTable';
 import ResetPassword from './Components/ResetPassword';
 import ConfirmEmail from './Components/ConfirmEmail';
-import FaxView from './Components/FaxView';
+import { useAuth } from './AuthPage';
 import EditUser from './Components/EditUser';
 import CreateNewUser from './Components/CreateNewUser';
 import { DuplicateFax } from './Components/DuplicateFax';
 import RxTracker from './Components/RxTracker';
+import { CaseDetail } from './Components/CaseDetail';
+import PatientDetailsForm from './Components/PatientDetailsForm';
+
 function App() {
-  const router = createBrowserRouter([
+  const { userRole } = useAuth(); // Get the user's role from the context
+
+  // If userRole is null, display a loading message or indicator.
+  if (userRole === null) {
+    return <div>Loading...</div>;
+  }
+
+  // Define common routes accessible to all users
+  const commonRoutes = [
     {
-      path: "/",
-      element: <LoginPage/>,
-    },
-      {
-        path: "/confirmemail",
-        element: <ConfirmEmail/>,
-     },
-     {
-      path: "/faxview/:faxId",
-      element: <FaxView/>,
-    },
-    {
-      path: "/adminpage",
-      element: <AdminPage/>,
+      path: '/',
+      component: LoginPage,
     },
     {
-      path: "/fax",
-      element: <FaxTable/>,
+      path: '/confirmemail',
+      component: ConfirmEmail,
     },
     {
-      path: "/resetpassword/:userId",
-      element: <ResetPassword/>,
+      path: '/resetpassword/:userId',
+      component: ResetPassword,
+    },
+    // Add other common routes here
+  ];
+
+  // Define admin-specific routes
+  const adminRoutes = [
+    {
+      path: '/adminpage',
+      component: AdminPage,
     },
     {
-      path:"/edit-user/:userId",
-      element: <EditUser/>,
+      path: '/fax',
+      component: FaxTable,
     },
     {
-      path: "/createnewuser",
-      element: <CreateNewUser/>,
+      path: '/edit-user/:userId',
+      component: EditUser,
     },
     {
-      path: "/duplicatefax/:faxId",
-      element: <DuplicateFax/>,
+      path: '/createnewuser',
+      component: CreateNewUser,
     },
     {
-      path: "/rxlist",
-      element: <RxTracker/>,
+      path: '/duplicatefax/:faxId',
+      component: DuplicateFax,
     },
-  ]);
+    {
+      path: '/rxlist',
+      component: RxTracker,
+    },
+    {
+      path: '/casedetail',
+      component: CaseDetail,
+    },
+    {
+      path: '/patientdetails',
+      component: PatientDetailsForm,
+    },
+  ];
+
   return (
     <div className="App">
-      <RouterProvider router={router} />
+      <Router>
+        <Routes>
+          {commonRoutes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              element={<route.component />}
+            />
+          ))}
+          {userRole === 'Admin' &&
+            adminRoutes.map((route, index) => (
+              <Route
+                key={index}
+                path={route.path}
+                element={<route.component />}
+              />
+            ))}
+          {/* Handle redirection to a 404 page for unknown routes */}
+          <Route
+            path="*"
+            element={
+              <div>
+                <p>404 - Page Not Found</p>
+              </div>
+            }
+          />
+        </Routes>
+      </Router>
     </div>
   );
 }

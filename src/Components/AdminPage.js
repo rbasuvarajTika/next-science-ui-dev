@@ -34,6 +34,11 @@ export default function AdminPage() {
       <Box
         sx={{
           width: '90%',
+          display: 'flex',
+          
+          justifyContent: 'center', // Center horizontally
+          alignItems: 'center',     // Center vertically
+          margin: '1 auto',        // Center horizontally within the container
         }}
       >
         <Button variant="contained">Admin Tasks</Button>

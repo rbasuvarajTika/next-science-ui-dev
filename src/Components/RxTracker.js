@@ -19,7 +19,7 @@ const columns = [
     { id: 'trnRxId', label: 'Rx ID', minWidth: 50 },
     { id: 'faxId', label: 'Fax ID', minWidth: 50 },
     { id: 'caseId', label: 'Case ID', minWidth: 70, align: 'right', format: (value) => value.toLocaleString('en-US') },
-    { id: 'faxDate', label: 'Fax DATE', minWidth: 70, align: 'right', format: (value) => value.toLocaleString('en-US') },
+    { id: 'faxDate', label: 'Fax DATE', minWidth: 80, align: 'right', format: (value) => value.toLocaleString('en-US') },
     { id: 'verifiedFlag', label: 'Verified FLAG', minWidth:100, align: 'right', format: (value) => value.toFixed(2) },
     { id: 'hcpName', label: 'HCP Name', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
     { id: 'hcpAddress1', label: 'HCP Address', minWidth: 100, align: 'right', format: (value) => value.toFixed(2) },
@@ -92,7 +92,16 @@ const columns = [
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
           <PagingTabs />
-          <Box sx={{ width: '90%', top: '2rem' }}>
+          <Box
+        sx={{
+          width: '90%',
+          display: 'flex',
+          
+          justifyContent: 'center', // Center horizontally
+          alignItems: 'center',     // Center vertically
+          margin: '1 auto',        // Center horizontally within the container
+        }}
+      >
             <Button variant="contained" style={{ bottom: '1rem' }}>
               RXTracker List
             </Button>

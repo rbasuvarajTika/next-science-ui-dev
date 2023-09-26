@@ -8,7 +8,8 @@ import { Button, Paper, Typography, Grid } from '@mui/material';
 import PagingTabs from './PagingTabs';
 import { useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 export function DuplicateFax({ onReset }) {
   const { faxId, duplicateFaxId } = useParams(); // Get the fax IDs from route parameters
@@ -26,6 +27,7 @@ export function DuplicateFax({ onReset }) {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [error, setError] = useState(null);
   const [mainFaxData, setMainFaxData] = useState(null);
+  const [selectedFaxId, setSelectedFaxId] = useState(null);
 
   // Duplicate PDF states and functions
   const [duplicateNumPages, setDuplicateNumPages] = useState(null);
@@ -34,8 +36,17 @@ export function DuplicateFax({ onReset }) {
   const [duplicateZoomLevel, setDuplicateZoomLevel] = useState(1);
   const [duplicateError, setDuplicateError] = useState(null);
   const [duplicateFaxData, setDuplicateFaxData] = useState(null);
+
+  // Options for the Autocomplete dropdown
+  
+  const [top100Films, setTop100Films] = useState([
+    { label: '1509414999', year: 1994 },
+   
+    { label: '1515538690', year: 1974 },
+  ]);
+
   // Function to fetch PDF data for both main and duplicate fax
-  const fetchPdfData = () => {
+  const fetchPdfData = (faxId) => {
     const token = localStorage.getItem('token');
 
     if (token) {
@@ -49,11 +60,7 @@ export function DuplicateFax({ onReset }) {
         .then((response) => {
           const mainFaxId = response.data.data[0].faxId;
           const duplicateFaxId = response.data.data[1].faxId;
-          console.log(mainFaxId);
-          console.log(duplicateFaxId);
-          console.log(response.data.data[0]);
-          console.log(response.data.data[1]);
-
+          setSelectedFaxId(duplicateFaxId); // Set the selected fax ID
 
           // Fetch main fax PDF
           axios({
@@ -104,7 +111,7 @@ export function DuplicateFax({ onReset }) {
 
   useEffect(() => {
     // Fetch PDF data for both main and duplicate fax when the component mounts
-    fetchPdfData();
+    fetchPdfData(faxId);
   }, []);
 
   // Original PDF functions
@@ -156,7 +163,7 @@ export function DuplicateFax({ onReset }) {
       setDuplicateZoomLevel(duplicateZoomLevel - 0.1);
     }
   };
-  
+
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
@@ -197,131 +204,174 @@ export function DuplicateFax({ onReset }) {
       });
   };
 
+  // Function to update the duplicate options based on the selected fax ID
+  const handleFaxIdSelect = (event, newValue) => {
+    // Fetch PDF data for the selected fax ID
+    setSelectedFaxId(newValue);
+    console.log('Selected Fax ID:', newValue);
+    fetchPdfData(newValue);
+  };
+
   return (
     <>
-   
       <PagingTabs />
       <div
-      style={{
-        position: 'absolute',
-        top: '10em', // Adjust the top position as needed
-        left: '30rem', // Adjust the left position as needed
-        zIndex: 1,
-       
-      }}
-    >
-         
-     <TableContainer component={Paper} elevation={3} style={{
-        position: 'absolute',
-        // Adjust the top position as needed
-         // Adjust the left position as needed
-        zIndex: 1,
-        height:'10rem',
-        width: '15rem',
-        top:'-40px'
-      }}
-    >
-  <Table aria-label="fax-details-table">
-    <TableHead>
-    <TableRow style={{background : 'green'}}>
-    <TableCell style={{align : 'center',
+        style={{
+          position: 'absolute',
+          top: '10em', // Adjust the top position as needed
+          left: '30rem', // Adjust the left position as needed
+          zIndex: 1,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleMakeMaster}
+          style={{
+            marginTop: '16px',
+            bottom: '8rem',
+            right: '14rem',
+          }}
+        >
+          Master
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleKeepDuplicate}
+          style={{
+            marginTop: '16px',
+            bottom: '7.4rem',
+            left: '20rem',
+          }}
+        >
+          Duplicate
+        </Button>
+        <Autocomplete
+          sx={{ width: '100%' }}
+          id="faxId-filter"
+          options={top100Films.map((film) => film.label)}
+          value={selectedFaxId}
+          onChange={handleFaxIdSelect}
+          size="small"
+          renderInput={(params) => (
+            <TextField {...params} label="Select Duplicate Fax ID" />
+          )}
+        />
+      </div>
+     
+      {/* <TableContainer component={Paper} elevation={3} style={{
+          position: 'absolute',
+          // Adjust the top position as needed
+          // Adjust the left position as needed
+          zIndex: 1,
+          height:'10rem',
+          width: '15rem',
+          top:'-40px'
+        }}
+      >
+        
+    <Table aria-label="fax-details-table">
+      <TableHead>
+      <TableRow style={{background : 'green'}}>
+      <TableCell style={{align : 'center',
+      
     
-  
-  }}>Master</TableCell>
-    <TableCell></TableCell>
-    </TableRow>
-      <TableRow style={{background : 'grey'}}>
-        <TableCell>Detail</TableCell>
-        <TableCell>Value</TableCell>
+    }}>Master</TableCell>
+      <TableCell></TableCell>
       </TableRow>
-    </TableHead>
-    <TableBody>
-      {mainFaxData && ( // Check if mainFaxData is not null before rendering
-        <>
-          <TableRow>
-            <TableCell>Fax ID</TableCell>
-            <TableCell>{mainFaxData.faxId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Case ID</TableCell>
-            <TableCell>{mainFaxData.caseId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Fax Status</TableCell>
-            <TableCell>{mainFaxData.faxStatus}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Main Fax ID</TableCell>
-            <TableCell>{mainFaxData.mainFaxId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Fax Date</TableCell>
-            <TableCell>{mainFaxData.faxDate}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Fax Number</TableCell>
-            <TableCell>{mainFaxData.faxNumber}</TableCell>
-          </TableRow>
-        </>
-      )}
-    </TableBody>
-  </Table>
-</TableContainer>
+        <TableRow style={{background : 'grey'}}>
+          <TableCell>Detail</TableCell>
+          <TableCell>Value</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {mainFaxData && ( // Check if mainFaxData is not null before rendering
+          <>
+            <TableRow>
+              <TableCell>Fax ID</TableCell>
+              <TableCell>{mainFaxData.faxId}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Case ID</TableCell>
+              <TableCell>{mainFaxData.caseId}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Fax Status</TableCell>
+              <TableCell>{mainFaxData.faxStatus}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Main Fax ID</TableCell>
+              <TableCell>{mainFaxData.mainFaxId}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Fax Date</TableCell>
+              <TableCell>{mainFaxData.faxDate}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Fax Number</TableCell>
+              <TableCell>{mainFaxData.faxNumber}</TableCell>
+            </TableRow>
+          </>
+        )}
+      </TableBody>
+    </Table>
+  </TableContainer>
 
-<TableContainer component={Paper} elevation={1}style={{
-        position: 'absolute',
-        // Adjust the top position as needed
-         // Adjust the left position as needed
-         top: '12rem',
-        zIndex: 1,
-        height:'10rem',
-        width: '15rem'
-       
-      }} >
-  <Table aria-label="fax-details-table">
-    <TableHead>
-    <TableRow style={{background : 'red'}}>
-    <TableCell>Duplicate</TableCell>
-    <TableCell></TableCell>
-    </TableRow>
-      <TableRow style={{background : 'grey'}}>
-        <TableCell>Detail</TableCell>
-        <TableCell>Value</TableCell>
+  <TableContainer component={Paper} elevation={1}style={{
+          position: 'absolute',
+          // Adjust the top position as needed
+          // Adjust the left position as needed
+          top: '12rem',
+          zIndex: 1,
+          height:'10rem',
+          width: '15rem'
+        
+        }} >
+    <Table aria-label="fax-details-table">
+      <TableHead>
+      <TableRow style={{background : 'red'}}>
+      <TableCell>Duplicate</TableCell>
+      <TableCell></TableCell>
       </TableRow>
-    </TableHead>
-    <TableBody>
-      {duplicateFaxData && ( // Check if duplicateFaxData is not null before rendering
-        <>
-          <TableRow>
-            <TableCell>Fax ID</TableCell>
-            <TableCell>{duplicateFaxData.faxId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Case ID</TableCell>
-            <TableCell>{duplicateFaxData.caseId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Fax Status</TableCell>
-            <TableCell>{duplicateFaxData.faxStatus}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Main Fax ID</TableCell>
-            <TableCell>{duplicateFaxData.mainFaxId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Fax Date</TableCell>
-            <TableCell>{duplicateFaxData.faxDate}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Fax Number</TableCell>
-            <TableCell>{duplicateFaxData.faxNumber}</TableCell>
-          </TableRow>
-        </>
-      )}
-    </TableBody>
-  </Table>
-</TableContainer>
-</div>   
+        <TableRow style={{background : 'grey'}}>
+          <TableCell>Detail</TableCell>
+          <TableCell>Value</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {duplicateFaxData && ( // Check if duplicateFaxData is not null before rendering
+          <>
+            <TableRow>
+              <TableCell>Fax ID</TableCell>
+              <TableCell>{duplicateFaxData.faxId}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Case ID</TableCell>
+              <TableCell>{duplicateFaxData.caseId}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Fax Status</TableCell>
+              <TableCell>{duplicateFaxData.faxStatus}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Main Fax ID</TableCell>
+              <TableCell>{duplicateFaxData.mainFaxId}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Fax Date</TableCell>
+              <TableCell>{duplicateFaxData.faxDate}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Fax Number</TableCell>
+              <TableCell>{duplicateFaxData.faxNumber}</TableCell>
+            </TableRow>
+          </>
+        )}
+      </TableBody>
+    </Table>
+  </TableContainer> */}
+
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ width: '48%' }}>
           {/* Original Fax Display */}
@@ -398,14 +448,7 @@ export function DuplicateFax({ onReset }) {
                 </Button>
               </Grid>
             </Grid>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleMakeMaster}
-              style={{ marginTop: '16px' }}
-            >
-              Master
-            </Button>
+           
           </Paper>
         </div>
         <div style={{ width: '48%' }}>
@@ -490,23 +533,11 @@ export function DuplicateFax({ onReset }) {
               onClick={handleMakeMaster}
               style={{
                 marginTop: '16px',
-                top:'10px ',
-                right:'3rem'
+                top:'7px ',
+                left:'-2.5rem'
               }}
             >
              Make Master
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              // onClick={handleSubmit} // Define a handleSubmit function
-              style={{
-                marginTop: '16rem',
-                right:'25rem',
-                margin: '4px',
-              }}
-            >
-              Submit
             </Button>
             <Button
               variant="contained"
@@ -515,8 +546,8 @@ export function DuplicateFax({ onReset }) {
               onClick={handleKeepDuplicate}
               style={{
                   marginTop: '16px',
-                left:'6rem',
-                bottom:'2.5rem'
+                right:'-2rem',
+                top:'0.5rem'
               }}
             >
               Keep Duplicate

@@ -28,7 +28,13 @@ export default function LoginPage() {
       });
 
       if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token);
+      //  localStorage.setItem('token', response.data.token);
+      const { token, role } = response.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+      console.log(token);
+      console.log(role);
+
         return true; // Successful login
       } else {
         return false; // Login failed
@@ -48,7 +54,7 @@ export default function LoginPage() {
 
     if (loginSuccessful) {
       // Redirect to the AdminPage or the desired route on successful login
-      window.location.href = '/AdminPage';
+      window.location.href = '/adminpage';
     } else {
       // Handle login failure, show an error message, etc.
       alert('Login failed. Incorrect Email or Password.');

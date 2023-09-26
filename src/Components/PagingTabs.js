@@ -69,7 +69,7 @@ const logoutHandle=()=>{
       >
         RxTracker List
       </Button> </Link>
-      <Button
+      <Link className='link' to='/casedetail'>  <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -78,7 +78,7 @@ const logoutHandle=()=>{
         startIcon={<MicrowaveSharpIcon />}
       >
         Case Details
-      </Button>
+      </Button></Link>
       
     </Stack>
     </Box>
