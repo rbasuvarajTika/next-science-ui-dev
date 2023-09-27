@@ -400,6 +400,9 @@ export function DuplicateFax({ onReset }) {
               onClick={handleZoomOut}
               size="small"
               disabled={zoomLevel <= 0.5}
+              style={{
+                margin: '1rem',
+              }}
             >
               -
             </Button>
@@ -478,6 +481,9 @@ export function DuplicateFax({ onReset }) {
               onClick={handleDuplicateZoomOut}
               size="small"
               disabled={duplicateZoomLevel <= 0.5}
+              style={{
+                margin: '1rem',
+              }}
             >
               -
             </Button>
@@ -534,7 +540,7 @@ export function DuplicateFax({ onReset }) {
               style={{
                 marginTop: '16px',
                 top:'7px ',
-                left:'-2.5rem'
+                left:'-0.6rem'
               }}
             >
              Make Master
@@ -546,7 +552,7 @@ export function DuplicateFax({ onReset }) {
               onClick={handleKeepDuplicate}
               style={{
                   marginTop: '16px',
-                right:'-2rem',
+                left:'3rem',
                 top:'0.5rem'
               }}
             >
