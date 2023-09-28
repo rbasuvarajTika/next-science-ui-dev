@@ -28,6 +28,7 @@ export function DuplicateFax({ onReset }) {
   const [error, setError] = useState(null);
   const [mainFaxData, setMainFaxData] = useState(null);
   const [selectedFaxId, setSelectedFaxId] = useState(null);
+  const [mainTrnFaxId, setMainTrnFaxId] = useState(null);
 
   // Duplicate PDF states and functions
   const [duplicateNumPages, setDuplicateNumPages] = useState(null);
@@ -36,6 +37,7 @@ export function DuplicateFax({ onReset }) {
   const [duplicateZoomLevel, setDuplicateZoomLevel] = useState(1);
   const [duplicateError, setDuplicateError] = useState(null);
   const [duplicateFaxData, setDuplicateFaxData] = useState(null);
+  const [duplicateTrnFaxId, setDuplicateTrnFaxId] = useState(null);
 
   // Options for the Autocomplete dropdown
   
@@ -58,8 +60,14 @@ export function DuplicateFax({ onReset }) {
         },
       })
         .then((response) => {
-          const mainFaxId = response.data.data[0].faxId;
-          const duplicateFaxId = response.data.data[1].faxId;
+          let mainFaxId = response.data.data[0].faxId;
+          let duplicateFaxId = response.data.data[1].faxId;
+          console.log(response.data.data[0].trnFaxId);
+          console.log(response.data.data[1].trnFaxId);
+          let mainTrnFaxId = response.data.data[0].trnFaxId; // Declare mainTrnFaxId
+          let duplicateTrnFaxId = response.data.data[1].trnFaxId; // Declare duplicateTrnFaxId
+          
+          //const trnFaxId = response.data.data[1].trnFaxId;
           setSelectedFaxId(duplicateFaxId); // Set the selected fax ID
 
           // Fetch main fax PDF
@@ -75,6 +83,7 @@ export function DuplicateFax({ onReset }) {
               setPdfResponse(mainResponse.data);
               setError(null); // Clear any previous errors on successful response
               setMainFaxData(response.data.data[0]);
+              setMainTrnFaxId(mainTrnFaxId);
             })
             .catch((error) => {
               setError('Error fetching main PDF. Please try again later.');
@@ -94,6 +103,7 @@ export function DuplicateFax({ onReset }) {
               setDuplicatePdfResponse(duplicateResponse.data);
               setDuplicateError(null); // Clear any previous errors on successful response
               setDuplicateFaxData(response.data.data[1]);
+              setDuplicateTrnFaxId(duplicateTrnFaxId);
             })
             .catch((error) => {
               setDuplicateError('Error fetching duplicate PDF. Please try again later.');
@@ -175,35 +185,64 @@ export function DuplicateFax({ onReset }) {
 
   // Function to handle making the current fax the master
   const handleMakeMaster = () => {
-    // Add your logic here to handle making the current fax the master
-    // You may want to make an API call to update the master status in your backend.
-    // Example:
-    axios.post(`/fax/makeMaster/${faxId}`)
-      .then((response) => {
-        console.log('PDF Response:', response.data);
-        setPdfResponse(response.data);
-        setError(null); // Clear any previous errors on successful response
-      })
-      .catch((error) => {
-        setError('Error fetching PDF. Please try again later.');
-        console.error('Error fetching PDF:', error);
-      });
-  };
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios
+        .put(`/api/v1/fax/updateFax/${duplicateTrnFaxId}/${mainTrnFaxId}`, null, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          // Handle success
+          console.log('Keep Duplicate Success:', response.data);
+          const confirmation = window.confirm('Fax has been made the master. Do you want to redirect to the fax page?');
 
-  // Function to handle keeping the current fax as a duplicate
+          // If the user clicks "OK" in the alert box, redirect to the fax page
+          if (confirmation) {
+            // Replace 'fax-page-url' with the actual URL of your fax page
+            window.location.href = '/fax';
+          }
+       
+          // You may want to update the state or perform other actions on success.
+        })
+        .catch((error) => {
+          // Handle error
+          console.error('Keep Duplicate Error:', error);
+          // You can set an error state or show an error message to the user.
+        });
+    } else {
+      setError('Authentication token not available. Please log in.');
+    }
+  };
   const handleKeepDuplicate = () => {
+    console.log(duplicateFaxData.faxId);
     // Add your logic here to handle keeping the current fax as a duplicate
     // You may want to make an API call to update the duplicate status in your backend.
     // Example:
-    axios.post(`/fax/keepDuplicate/${duplicateFaxId}`)
-      .then((response) => {
-        // Handle success
-      })
-      .catch((error) => {
-        // Handle error
-      });
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios
+        .put(`/api/v1/fax/keepDuplicate/6`, null, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          // Handle success
+          console.log('Keep Duplicate Success:', response.data);
+          // You may want to update the state or perform other actions on success.
+        })
+        .catch((error) => {
+          // Handle error
+          console.error('Keep Duplicate Error:', error);
+          // You can set an error state or show an error message to the user.
+        });
+    } else {
+      setError('Authentication token not available. Please log in.');
+    }
   };
-
+  
   // Function to update the duplicate options based on the selected fax ID
   const handleFaxIdSelect = (event, newValue) => {
     // Fetch PDF data for the selected fax ID
@@ -259,7 +298,88 @@ export function DuplicateFax({ onReset }) {
           )}
         />
       </div>
-     
+      <TableContainer
+  component={Paper}
+  elevation={3}
+  style={{
+    position: 'absolute',
+    zIndex: 1,
+    height: '7.1rem',
+    width: '15rem',
+    top: '40px',
+  }}
+>
+  <Table aria-label="fax-details-table">
+    {/* <TableHead>
+      <TableRow style={{ background: 'green' }}>
+        <TableCell style={{ align: 'center' }}>Master</TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+      <TableRow style={{ background: 'grey' }}>
+        <TableCell>Detail</TableCell>
+        <TableCell>Value</TableCell>
+      </TableRow>
+    </TableHead> */}
+    <TableBody>
+      {mainFaxData && (
+        <>
+          <TableRow>
+            <TableCell>Fax ID</TableCell>
+            <TableCell>{mainFaxData.faxId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Date</TableCell>
+            <TableCell>{mainFaxData.faxDate}</TableCell>
+          </TableRow>
+          {/* Add more rows for other properties you want to display */}
+        </>
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
+
+{/* Duplicate Fax Data */}
+<TableContainer
+  component={Paper}
+  elevation={1}
+  style={{
+    position: 'absolute',
+    zIndex: 1,
+    marginTop:'1px',
+    height: '7rem',
+    width: '15rem',
+    top: '40px',
+    left:'40rem'
+  }}
+>
+  <Table aria-label="fax-details-table">
+    {/* <TableHead>
+      <TableRow style={{ background: 'red' }}>
+        <TableCell>Duplicate</TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+      <TableRow style={{ background: 'grey' }}>
+        <TableCell>Detail</TableCell>
+        <TableCell>Value</TableCell>
+      </TableRow>
+    </TableHead> */}
+    <TableBody>
+      {duplicateFaxData && (
+        <>
+          <TableRow>
+            <TableCell>Fax ID</TableCell>
+            <TableCell>{duplicateFaxData.faxId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fax Date</TableCell>
+            <TableCell>{duplicateFaxData.faxDate}</TableCell>
+          </TableRow>
+          {/* Add more rows for other properties you want to display */}
+        </>
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
       {/* <TableContainer component={Paper} elevation={3} style={{
           position: 'absolute',
           // Adjust the top position as needed
@@ -408,51 +528,57 @@ export function DuplicateFax({ onReset }) {
             </Button>
           </div>
           <Paper
-            elevation={3}
-            style={{
-              padding: '20px',
-              maxWidth: '300px',
-              margin: 'auto',
-              transform: `scale(${zoomLevel})`,
-              transformOrigin: 'top left',
-            }}
-          >
-            {pdfResponse ? (
-              <Document file={pdfResponse} onLoadSuccess={onDocumentLoadSuccess}>
-                <Page pageNumber={pageNumber} width={300} />
-              </Document>
-            ) : (
-              <Typography variant="body1" align="center" color="error">
-                {error || 'Loading PDF...'}
-              </Typography>
-            )}
-            {numPages && (
-              <Typography variant="body1" align="center">
-                Page {pageNumber} of {numPages}
-              </Typography>
-            )}
-            <Grid container justifyContent="space-between" spacing={2}>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  onClick={handlePreviousPage}
-                  disabled={pageNumber === 1}
-                >
-                  Previous
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  onClick={handleNextPage}
-                  disabled={pageNumber === numPages}
-                >
-                  Next
-                </Button>
-              </Grid>
-            </Grid>
-           
-          </Paper>
+  elevation={3}
+  style={{
+    padding: '20px',
+    maxWidth: '300px',
+    margin: 'auto',
+    transform: `scale(${zoomLevel})`,
+    transformOrigin: 'top left',
+    marginTop: '50px', // Add margin to move content down
+  }}
+>
+  {/* Existing content */}
+  {pdfResponse ? (
+    <Document file={pdfResponse} onLoadSuccess={onDocumentLoadSuccess}>
+      <Page pageNumber={pageNumber} width={300} />
+    </Document>
+  ) : (
+    <Typography variant="body1" align="center" color="error">
+      {error || 'Loading PDF...'}
+    </Typography>
+  )}
+  {numPages && (
+    <Typography variant="body1" align="center">
+      Page {pageNumber} of {numPages}
+    </Typography>
+  )}
+  <Grid container justifyContent="space-between" spacing={2}>
+    <Grid item>
+      <Button
+        variant="contained"
+        onClick={handlePreviousPage}
+        disabled={pageNumber === 1}
+      >
+        Previous
+      </Button>
+    </Grid>
+    <Grid item>
+      <Button
+        variant="contained"
+        onClick={handleNextPage}
+        disabled={pageNumber === numPages}
+      >
+        Next
+      </Button>
+    </Grid>
+  </Grid>
+</Paper>
+
+
+
+
+
         </div>
         <div style={{ width: '48%' }}>
           {/* Duplicate Fax Display */}
@@ -489,15 +615,16 @@ export function DuplicateFax({ onReset }) {
             </Button>
           </div>
           <Paper
-            elevation={3}
-            style={{
-              padding: '20px',
-              maxWidth: '300px',
-              margin: 'auto',
-              transform: `scale(${duplicateZoomLevel})`,
-              transformOrigin: 'top left',
-            }}
-          >
+          elevation={3}
+          style={{
+            padding: '20px',
+            maxWidth: '300px',
+            margin: 'auto',
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'top left',
+            marginTop: '50px', // Add margin to move content down
+          }}
+        >
             {duplicatePdfResponse ? (
               <Document file={duplicatePdfResponse} onLoadSuccess={onDuplicateDocumentLoadSuccess}>
                 <Page pageNumber={duplicatePageNumber} width={300} />

@@ -11,7 +11,7 @@ import FaxDetails from './FaxDetails';
 
 
 
-export default function FaxView({ onReset }) {
+export  function FaxView({ onReset }) {
   const { faxId } = useParams(); // Get the user ID from route parameters
   const location = useLocation();
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
