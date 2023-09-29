@@ -36,6 +36,8 @@ function PatientDetailsForm() {
   const [salesRepName, setSalesRepName] = useState('');
   const [salesRepCell, setSalesRepCell] = useState('');
   const [yesNoValue, setYesNoValue] = useState('');
+  const [woundData, setWoundData] = useState([]);
+
   const { trnRxId } = useParams();
  
   useEffect(() => {
@@ -77,6 +79,35 @@ function PatientDetailsForm() {
   
     fetchData();
   }, [trnRxId]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+  
+        // Make a GET request to the API to fetch wound data
+        const response = await axios.get('/api/v1/fax/rxTrackerWoundList', config);
+        const responseData = response.data;
+       console.log(responseData);
+        if (responseData && responseData.data && responseData.data.length > 0) {
+          // Update the woundData state variable with the retrieved data
+          setWoundData(responseData.data);
+        } else {
+          // Handle the case where no wound data is found.
+          console.error('No wound data found.');
+        }
+      } catch (error) {
+        console.error('Error fetching wound data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
   
    const handleYesNoChange = (event) => {
      setYesNoValue(event.target.value);
@@ -201,47 +232,44 @@ function PatientDetailsForm() {
     </Container>
      
 
-    <Container
-        sx={{
-          marginLeft: '-1rem', // Make sure marginLeft is the same as the first container
-        }}
-      >
-        <Typography variant="h6" gutterBottom style={{ textAlign: 'start' }}>
-          Order Information
-        </Typography>
-        <Button
-              type="submit"
-              variant="outlined"
-              className="border"
-              style={{bottom:'2rem',
-            left:'30rem'
-            }}
-              size='small'
-            >
-              Add
-            </Button>
-        <TableContainer component={Paper} style={{left:'1rem', 
-    width:'50%'
-    }}>
-          <Table >
-          <TableHead>
-  <TableRow>
-    <TableCell style={{ minWidth: 10 }}>Wound</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Location</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Length</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Width</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Depth</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Wound Stage</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Drainage</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Debrided ICD-10 Code</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Debridement Date</TableCell>
-    <TableCell style={{ minWidth: 10 }}>Debridement Type</TableCell>
-  </TableRow>
-</TableHead>
-           
-          </Table>
-        </TableContainer>
-      </Container>
+    <TableContainer component={Paper} style={{ left: '1rem', width: '50%' }}>
+  <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell style={{ minWidth: 10 }}>Wound</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Location</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Length</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Width</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Depth</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Wound Stage</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Drainage</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Debrided </TableCell>
+        <TableCell style={{ minWidth: 10 }}> ICD-10 Code</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Debridement Date</TableCell>
+        <TableCell style={{ minWidth: 10 }}>Debridement Type</TableCell>
+
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {woundData.map((wound) => (
+        <TableRow key={wound.id}>
+          <TableCell>{wound.woundNo}</TableCell>
+          <TableCell>{wound.woundLocation}</TableCell>
+          <TableCell>{wound.woundLength}</TableCell>
+          <TableCell>{wound.woundWidth}</TableCell>
+          <TableCell>{wound.woundDepth}</TableCell>
+          <TableCell>{wound.woundThickness}</TableCell>
+          <TableCell>{wound.drainage}</TableCell>
+          <TableCell>{wound.debrided}</TableCell>
+          <TableCell>{wound.icdCode}</TableCell>
+          <TableCell>{wound.debridedDate}</TableCell>
+          
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
+
       <TableContainer component={Paper} style={{ left: '1rem', width: '50%' }}>
   <Table>
     <TableHead>
