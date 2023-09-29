@@ -70,7 +70,7 @@ function App() {
       element: userRole === 'Admin' ? <RxTracker /> : <Navigate to="/" />,
     },
     {
-      path: '/casedetail',
+      path: '/casedetail/:trnRxId',
       element: userRole === 'Admin' ? <CaseDetail /> : <Navigate to="/" />,
     },
     {

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import Axios for making HTTP requests
+import { useParams } from 'react-router-dom';
 import {
     Container,
     Typography,
@@ -16,6 +18,12 @@ import {
     TableRow,
     Paper,
   } from '@mui/material';
+  const data = [
+    { id: 1, name: 'Provider 1', npi: '1234567890' },
+    { id: 2, name: 'Provider 2', npi: '9876543210' },
+    { id: 3, name: 'Provider 3', npi: '4567890123' },
+    { id: 4, name: 'Provider 4', npi: '7890123456' },
+  ];
 
 function PatientDetailsForm() {
   const [patientName, setPatientName] = useState('');
@@ -28,30 +36,55 @@ function PatientDetailsForm() {
   const [salesRepName, setSalesRepName] = useState('');
   const [salesRepCell, setSalesRepCell] = useState('');
   const [yesNoValue, setYesNoValue] = useState('');
-  const [releaseDate, setReleaseDate] = useState('');
-
-  const handleYesNoChange = (event) => {
-    setYesNoValue(event.target.value);
+  const { trnRxId } = useParams();
+ 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+  
+        // Make a GET request to the API using the trnRxId parameter
+        const response = await axios.get(`/api/v1/fax/rxTrackerDetailList/${trnRxId}`, config);
+        const responseData = response.data;
+  
+        if (responseData && responseData.data && responseData.data.length > 0) {
+          const patientData = responseData.data[0];
+          setPatientName(patientData.patientName);
+          console.log(patientData.patientName);
+          setCellPhone(patientData.cellPhone);
+          setShipToAddress(patientData.shipToAddress);
+          setCity(patientData.patientCity);
+          setState(patientData.patientState);
+           setZip(patientData.patientZip);
+          setDateOfBirth(patientData.dateOfBirth);
+          setSalesRepName(patientData.salesRepName);
+          setSalesRepCell(patientData.salesRepCell);
+            setYesNoValue(patientData.yesNoValue);
+          
+        } else {
+          // Handle the case where no data is returned or the structure is different
+          console.error('No patient data found.');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
+  }, [trnRxId]);
+  
+   const handleYesNoChange = (event) => {
+     setYesNoValue(event.target.value);
   };
-  const tableData = [
-    {
-      wound: 'Sample Wound',
-      location: 'Sample Location',
-      length: 'Sample Length',
-      width: 'Sample Width',
-      depth: 'Sample Depth',
-      woundStage: 'Sample Wound Stage',
-      drainage: 'Sample Drainage',
-      icd10Code: 'Sample ICD-10 Code',
-      debridementDate: 'Sample Date',
-      debridementType: 'Sample Type',
-    },
-    // Add more data as needed
-  ];
-
-
+  
   return (
     <>
+    
     <Container
       sx={{
         width: '50%',
@@ -71,16 +104,17 @@ function PatientDetailsForm() {
         <Grid container spacing={1}>
           <Grid item xs={12} sm={4}>
             <TextField
-              label="Patient Name"
+              label={"PatientName"}
               fullWidth
-              size="small"
+              id="patientName"
+                    size="small"
               value={patientName}
               onChange={(e) => setPatientName(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={5}>
             <TextField
-              label="Cell Phone"
+              label={"Cell Phone"}
               fullWidth
               size="small"
               value={cellPhone}
@@ -96,7 +130,7 @@ function PatientDetailsForm() {
               onChange={(e) => setShipToAddress(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} sm={4}>
             <TextField
               label="City"
               fullWidth
@@ -150,7 +184,7 @@ function PatientDetailsForm() {
               onChange={(e) => setSalesRepCell(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} sm={4}>
             <RadioGroup
               aria-label="YesNo"
               name="yesNo"
@@ -165,6 +199,8 @@ function PatientDetailsForm() {
         </Grid>
       </form>
     </Container>
+     
+
     <Container
         sx={{
           marginLeft: '-1rem', // Make sure marginLeft is the same as the first container
@@ -218,7 +254,38 @@ function PatientDetailsForm() {
     </TableHead>
   </Table>
 </TableContainer>
-
+<TableContainer component={Paper} sx={{
+          width: '100%',
+          maxWidth: '60px',
+          maxHeight:'360px',
+          margin: '1rem',
+          minWidth: '400px', // Minimum width added here
+        }}>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>Provider Name</TableCell>
+          <TableCell>NPI</TableCell>
+          <TableCell>Select</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+  {data.map((row) => (
+    <TableRow key={row.id}>
+      <TableCell>
+        <Radio
+          // You can handle radio button selection here
+          // For example, using state to track selected rows
+          // onChange={(e) => handleRadioChange(e, row.id)}
+        />
+      </TableCell>
+      <TableCell>{row.name}</TableCell>
+      <TableCell>{row.npi}</TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+    </Table>
+  </TableContainer>
             <Grid container spacing={2} justifyContent="flex-end" style={{ marginTop: '1rem' }}>
                 <Grid item>
                     <Button variant="outlined" 
@@ -236,6 +303,7 @@ function PatientDetailsForm() {
                     </Button>
                 </Grid>
             </Grid>
+          
     </>
   );
 }

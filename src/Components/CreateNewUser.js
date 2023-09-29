@@ -10,7 +10,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+
 
 export default function CreateNewUser() {
   const [alignment, setAlignment] = React.useState('web');

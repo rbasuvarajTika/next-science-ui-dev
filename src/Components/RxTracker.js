@@ -9,10 +9,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
-import { Link} from 'react-router-dom';
 import PagingTabs from './PagingTabs';
 import  { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // Import Link from React Router
+
 
 
 const columns = [
@@ -21,13 +22,13 @@ const columns = [
     { id: 'caseId', label: 'Case ID', minWidth: 70, align: 'right', format: (value) => value.toLocaleString('en-US') },
     { id: 'faxDate', label: 'Fax DATE', minWidth: 80, align: 'right', format: (value) => value.toLocaleString('en-US') },
     { id: 'verifiedFlag', label: 'Verified FLAG', minWidth:100, align: 'right', format: (value) => value.toFixed(2) },
-    { id: 'Place of Service', label: 'Place of Service', minWidth:100, align: 'right', format: (value) => value.toFixed(2) },
-    { id: 'hcpName', label: 'Order Type', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
-    { id: 'hcpName', label: 'Wound Active', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
-    { id: 'hcpName', label: 'Rep Name', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
-    { id: 'hcpName', label: 'Rep Cell No', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
-    { id: 'hcpName', label: 'Territory Name', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
-    { id: 'hcpName', label: 'HCP Name', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
+    // { id: 'Place of Service', label: 'Place of Service', minWidth:100, align: 'right', format: (value) => value.toFixed(2) },
+    // { id: 'hcpName', label: 'Order Type', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
+    // { id: 'hcpNam', label: 'Wound Active', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
+    // { id: 'hcpNae', label: 'Rep Name', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
+    // { id: 'hcpNme', label: 'Rep Cell No', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
+    // { id: 'hcpame', label: 'Territory Name', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
+    { id: 'hcName', label: 'HCP Name', minWidth: 100, align: 'right', format: (value) => value.toLocaleString('en-US') },
     { id: 'hcpAddress1', label: 'HCP Address', minWidth: 100, align: 'right', format: (value) => value.toFixed(2) },
     { id: 'hcpCity', label: 'HCP City', minWidth: 100, align: 'right', format: (value) => value.toFixed(2) },
     { id: 'hcpState', label: 'HCP State', minWidth: 100, align: 'right', format: (value) => value.toFixed(2) },
@@ -136,17 +137,25 @@ const columns = [
                         hover
                         role="checkbox"
                         tabIndex={-1}
-                       // key={row.trnRxId} // Use a unique identifier from your data
-                        key={index} 
+                       key={row.trnRxId} // Use a unique identifier from your data
+                        
                       >
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {value}
-                            </TableCell>
-                          );
-                        })}
+                       {columns.map((column) => (
+  <TableCell
+    key={column.id}
+    align={column.align}
+    style={{ minWidth: column.minWidth }}
+  >
+    {column.id === 'trnRxId' ? (
+      // Wrap the Rx ID in a Link component with the corresponding URL
+      <Link to={`/casedetail/${row.trnRxId}`}>{row.trnRxId}</Link>
+    ) : (
+      // Render other columns as usual
+      row[column.id]
+    )}
+  </TableCell>
+))}
+
                       </TableRow>
                     );
                   })}

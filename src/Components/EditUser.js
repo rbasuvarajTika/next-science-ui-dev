@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -11,7 +11,6 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
 import { useParams, useLocation } from 'react-router-dom';
-import toast from 'react-hot-toast';
 
 export default function EditUser() {
   const { userId } = useParams(); // Get the user ID from route parameters
