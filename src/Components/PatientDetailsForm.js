@@ -36,6 +36,9 @@ function PatientDetailsForm() {
   const [salesRepName, setSalesRepName] = useState('');
   const [salesRepCell, setSalesRepCell] = useState('');
   const [yesNoValue, setYesNoValue] = useState('');
+  const [placeOfService, setPlaceOfService] = useState(''); // Define placeOfService state
+  const [orderInformation, setOrderInformation] = useState(''); // Define orderInformation state
+  const [activeWound, setActiveWound] = useState(''); 
   const [woundData, setWoundData] = useState([]);
 
   const { trnRxId } = useParams();
@@ -215,19 +218,38 @@ function PatientDetailsForm() {
               onChange={(e) => setSalesRepCell(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <RadioGroup
-              aria-label="YesNo"
-              name="yesNo"
-              value={yesNoValue}
-              onChange={handleYesNoChange}
-              row
-            >
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="no" control={<Radio />} label="No" />
-            </RadioGroup>
-          </Grid>
-        </Grid>
+          <Grid item xs={12} sm={6}>
+        <TextField
+          label="Place of Service"
+          fullWidth
+          size="small"
+          value={placeOfService}
+          onChange={(e) => setPlaceOfService(e.target.value)}
+        />
+      </Grid>
+
+      {/* Order Information */}
+      <Grid item xs={12} sm={6}>
+        <TextField
+          label="Order Information"
+          fullWidth
+          size="small"
+          value={orderInformation}
+          onChange={(e) => setOrderInformation(e.target.value)}
+        />
+      </Grid>
+
+      {/* Does Patient Still Have an Active Wound */}
+      <Grid item xs={12} sm={6}>
+        <TextField
+          label="Does Patient Still Have an Active Wound"
+          fullWidth
+          size="small"
+          value={activeWound}
+          onChange={(e) => setActiveWound(e.target.value)}
+        />
+      </Grid>
+    </Grid>
       </form>
     </Container>
      
