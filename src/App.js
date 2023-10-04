@@ -13,6 +13,10 @@ import RxTracker from './Components/RxTracker';
 import { CaseDetail } from './Components/CaseDetail';
 import PatientDetailsForm from './Components/PatientDetailsForm';
 import { FaxView } from './Components/FaxView';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import{ AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs/AdapterDayjs';
+import { ReadyForReview } from './Components/ReadyForReview';
+import { PatientDataProvider } from './Components/PatientDataContext';
 
 function App() {
   const { userRole } = useAuth(); // Get the user's role from the context
@@ -77,10 +81,17 @@ function App() {
       path: '/patientdetails',
       element: userRole === 'Admin' ? <PatientDetailsForm /> : <Navigate to="/" />,
     },
+
+    {
+      path: '/review',
+      element: userRole === 'Admin' ? <ReadyForReview /> : <Navigate to="/" />,
+    },
   ];
 
   return (
     <div className="App">
+       <PatientDataProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
@@ -102,6 +113,8 @@ function App() {
           />
         </Routes>
       </Router>
+      </LocalizationProvider>
+      </PatientDataProvider>
     </div>
   );
 }

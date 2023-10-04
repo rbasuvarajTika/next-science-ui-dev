@@ -232,6 +232,11 @@ export function DuplicateFax({ onReset }) {
           // Handle success
           console.log('Keep Duplicate Success:', response.data);
           // You may want to update the state or perform other actions on success.
+            // Show an alert indicating the success
+            alert('Fax has been kept as a duplicate.');
+
+            // Redirect to the fax page
+            window.location.href = '/fax'; 
         })
         .catch((error) => {
           // Handle error
