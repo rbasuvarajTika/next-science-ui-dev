@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios for making HTTP requests
 import { useParams } from 'react-router-dom';
-import moment from 'moment'; 
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 import { usePatientData } from './PatientDataContext';
 import { Link } from 'react-router-dom';
 import {
@@ -21,6 +20,7 @@ import {
     Paper,
   } from '@mui/material';
 import { ReadyForReview } from './ReadyForReview';
+import WoundInfoTable from './WoundInfoTable';
   const data = [
     { id: 1, name: 'Provider 1', npi: '1234567890' },
     { id: 2, name: 'Provider 2', npi: '9876543210' },
@@ -42,7 +42,7 @@ function PatientDetailsForm() {
   const [placeOfService, setPlaceOfService] = useState(''); // Define placeOfService state
   const [orderInformation, setOrderInformation] = useState(''); // Define orderInformation state
   const [activeWound, setActiveWound] = useState(''); 
-  const [woundData, setWoundData] = useState([]);
+  
   const [patientData, setPatientData] = useState(null);
   const [isReadyForReview, setIsReadyForReview] = useState(false); // Track button click
   
@@ -78,7 +78,8 @@ function PatientDetailsForm() {
           setCity(patientData.patientCity);
           setState(patientData.patientState);
            setZip(patientData.patientZip);
-         setDateOfBirth(moment(patientData.dateOfBirth)); // Parse dateOfBirth as a Moment.js object
+         setDateOfBirth(patientData.dateOfBirth); 
+        // console.log(moment(patientData.dateOfBirth));// Parse dateOfBirth as a Moment.js object
           setSalesRepName(patientData.salesRepName);
           setSalesRepCell(patientData.salesRepCell);
             setYesNoValue(patientData.yesNoValue);
@@ -97,55 +98,27 @@ function PatientDetailsForm() {
   
     fetchData();
   }, [trnRxId]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-  
-        // Make a GET request to the API to fetch wound data
-        const response = await axios.get('/api/v1/fax/rxTrackerWoundList', config);
-        const responseData = response.data;
-       //console.log(responseData);
-        if (responseData && responseData.data && responseData.data.length > 0) {
-          // Update the woundData state variable with the retrieved data
-          setWoundData(responseData.data);
-        } else {
-          // Handle the case where no wound data is found.
-          console.error('No wound data found.');
-        }
-      } catch (error) {
-        console.error('Error fetching wound data:', error);
-      }
-    };
-  
-    fetchData();
-  }, []);
-  
-  useEffect(() => {
-    // Convert the dateOfBirth value to a Moment.js object
-    const dateOfBirthMoment = moment(dateOfBirth);
-    const currentDateMoment = moment();
+ 
+  // useEffect(() => {
+  //   // Convert the dateOfBirth value to a Moment.js object
+  //   const dateOfBirthMoment = moment(dateOfBirth);
+  //   const currentDateMoment = moment();
 
-    // Check if dateOfBirth is before the current date
-    const isDateOfBirthBeforeCurrentDate = dateOfBirthMoment.isBefore(currentDateMoment);
+  //   // Check if dateOfBirth is before the current date
+  //   const isDateOfBirthBeforeCurrentDate = dateOfBirthMoment.isBefore(currentDateMoment);
 
-    // You can use isDateOfBirthBeforeCurrentDate in your logic
-    if (isDateOfBirthBeforeCurrentDate) {
-      // Do something when dateOfBirth is before the current date
-      console.log('Date of Birth is before the current date.');
-    } else {
-      // Do something else when dateOfBirth is not before the current date
-      console.log('Date of Birth is after or equal to the current date.');
-    }
-  }, [dateOfBirth]);
-   const handleYesNoChange = (event) => {
-     setYesNoValue(event.target.value);
-  };
+  //   // You can use isDateOfBirthBeforeCurrentDate in your logic
+  //   if (isDateOfBirthBeforeCurrentDate) {
+  //     // Do something when dateOfBirth is before the current date
+  //     console.log('Date of Birth is before the current date.');
+  //   } else {
+  //     // Do something else when dateOfBirth is not before the current date
+  //     console.log('Date of Birth is after or equal to the current date.');
+  //   }
+  // }, [dateOfBirth]);
+  //  const handleYesNoChange = (event) => {
+  //    setYesNoValue(event.target.value);
+  // };
   
   return (
     <>
@@ -226,15 +199,12 @@ function PatientDetailsForm() {
   />
 </Grid>
 <Grid item xs={12} sm={4}>
-  <DatePicker
+  <TextField
     label="Date of Birth"
     fullWidth
     size="small"
     value={dateOfBirth}
-    onChange={(newValue) => setDateOfBirth(newValue)}
-    inputFormat="yyyy/mm/dd"
-    views={['year', 'month', 'date']}
-    renderInput={(params) => <TextField {...params} />}
+    onChange={(e) => setDateOfBirth(e.target.value)}
   />
 </Grid>
           <Grid item xs={12} sm={3}>
@@ -291,56 +261,7 @@ function PatientDetailsForm() {
     </Container>
      
 
-    <TableContainer component={Paper} style={{ left: '1rem', width: '50%' }}>
-  <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell style={{ minWidth: 10 }}>Wound</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Location</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Length</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Width</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Depth</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Wound Stage</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Drainage</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Debrided </TableCell>
-        <TableCell style={{ minWidth: 10 }}> ICD-10 Code</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Debridement Date</TableCell>
-        <TableCell style={{ minWidth: 10 }}>Debridement Type</TableCell>
-
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {woundData.map((wound) => (
-        <TableRow key={wound.id}>
-          <TableCell>{wound.woundNo}</TableCell>
-          <TableCell>{wound.woundLocation}</TableCell>
-          <TableCell>{wound.woundLength}</TableCell>
-          <TableCell>{wound.woundWidth}</TableCell>
-          <TableCell>{wound.woundDepth}</TableCell>
-          <TableCell>{wound.woundThickness}</TableCell>
-          <TableCell>{wound.drainage}</TableCell>
-          <TableCell>{wound.debrided}</TableCell>
-          <TableCell>{wound.icdCode}</TableCell>
-          <TableCell>{wound.debridedDate}</TableCell>
-          
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-</TableContainer>
-
-      <TableContainer component={Paper} style={{ left: '1rem', width: '50%' }}>
-  <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell style={{ minWidth: 10, paddingTop: '20px' }}>(WND)#</TableCell>
-        <TableCell style={{ minWidth: 10, paddingTop: '20px' }}>Check Desired Kit</TableCell>
-        <TableCell style={{ minWidth: 10, paddingTop: '20px' }}>Description</TableCell>
-        <TableCell style={{ minWidth: 10, paddingTop: '20px' }}>A-Code</TableCell>
-      </TableRow>
-    </TableHead>
-  </Table>
-</TableContainer>
+    <WoundInfoTable/>
 <TableContainer component={Paper} sx={{
           width: '100%',
           maxWidth: '60px',
@@ -388,12 +309,7 @@ function PatientDetailsForm() {
             </Button></Link>
                 </Grid>    
                 {patientData && isReadyForReview && <ReadyForReview patientData={patientData} />}
-
-               
-      
-      
-                <Grid item>
-                  
+                <Grid item> 
                     <Button variant="contained" color="primary"   style={{right:'30rem',bottom:'1rem'}}>
                         Save
                     </Button>

@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { usePatientData } from './PatientDataContext'; // Import the custom hook
-import { Grid, Container, Typography, Paper, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { Grid, Container, Typography, Paper, FormGroup, FormControlLabel, Checkbox ,Button, TextField} from '@mui/material';
 import PagingTabs from './PagingTabs';
+import PatientDetailsForm from './PatientDetailsForm';
+import WoundInfoTable from './WoundInfoTable';
+
 
 export function ReadyForReview() {
-  const { patientData } = usePatientData(); // Access patientData from the context
+  const { patientData ,setPatientData} = usePatientData(); // Access patientData from the context
   const [checklist, setChecklist] = useState({
     isPatientInfoComplete: false,
-    isInsuranceInfoMissing:false,
-    isPrescriptionCaptured:false,
-    isSignaturePresent:false,
-    isRepListed:false,
-    providerNameOrNpiIsMissing :false,
-
-
+    isInsuranceInfoMissing: false,
+    isPrescriptionCaptured: false,
+    isSignaturePresent: false,
+    isRepListed: false,
+    providerNameOrNpiIsMissing: false,
     // Add more checklist items as needed
   });
 
@@ -24,36 +25,180 @@ export function ReadyForReview() {
   const handleChecklistChange = (event) => {
     setChecklist({ ...checklist, [event.target.name]: event.target.checked });
   };
+  const handlePatientDataChange = (field, value) => {
+    // Create a copy of the current patientData object
+    const updatedPatientData = { ...patientData };
+  
+    // Update the specified field with the new value
+    updatedPatientData[field] = value;
+  
+    // Update the patientData state with the updated object
+    setPatientData(updatedPatientData);
+  };
 
   return (
     <>
       <PagingTabs />
-      <Grid container justifyContent="flex-end">
-        <Grid item>
-          <Container maxWidth="sm" style={{ marginTop: '16px', marginBottom: '16px' }}>
+      <Container maxWidth="lg">
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            {/* Content on the left */}
+            {/* <PatientDetailsForm isReadyForReviewMode /> */}
             <Paper elevation={3} style={{ padding: '16px' }}>
-              <Typography variant="h6" style={{textAlign: 'center'}}>Patient Details</Typography>
-              {patientData ? (
-                <div>
-                  <p>Patient Name: {patientData.patientName}</p>
-                  <p>Account: {patientData.accountName}</p>
-                  <p>Rx Number: {}</p>
-                  <p>Tika ID: {}</p>
-                  <p>HCP Name: {patientData.hcpName}</p>
-                  <p>
-                    Territory: {patientData.accAddress1} {patientData.accCity} {patientData.accState} {patientData.accZip}
-                  </p>
-                  {/* Display other patient details as needed */}
-                </div>
-              ) : (
-                <p>No patient data available.</p>
-              )}
-            </Paper>
+  <Typography variant="h6" style={{ textAlign: 'center' }}>Patient </Typography>
+  {patientData ? (
+    <form>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Patient Name"
+            fullWidth
+            size="small"
+            value={patientData.patientName}
+            onChange={(e) => handlePatientDataChange('patientName', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={5}>
+          <TextField
+            label="Cell Phone"
+            fullWidth
+            size="small"
+            value={patientData.cellPhone}
+            onChange={(e) => handlePatientDataChange('cellPhone', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={5}>
+          <TextField
+            label="Ship To Address"
+            fullWidth
+            size="small"
+            value={patientData.shipToAddress}
+            onChange={(e) => handlePatientDataChange('shipToAddress', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="City"
+            fullWidth
+            size="small"
+            value={patientData.patientCity}
+            onChange={(e) => handlePatientDataChange('patientCity', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={2}>
+          <TextField
+            label="State"
+            fullWidth
+            size="small"
+            value={patientData.patientState}
+            onChange={(e) => handlePatientDataChange('patientState', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={2}>
+          <TextField
+            label="ZIP"
+            fullWidth
+            size="small"
+            value={patientData.patientZip}
+            onChange={(e) => handlePatientDataChange('patientZip', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+  <TextField
+    label="Date of Birth"
+    fullWidth
+    size="small"
+    value={patientData.dateOfBirth}
+    onChange={(e) => handlePatientDataChange('dateOfBirth', e.target.value)}  />
+</Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label="Sales Rep Name"
+            fullWidth
+            size="small"
+            value={patientData.hcpName}
+            onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label="Sales Rep Cell"
+            fullWidth
+            size="small"
+            value={patientData.hcpName}
+            onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Place of Service"
+            fullWidth
+            size="small"
+            value={patientData.hcpName}
+            onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Order Information"
+            fullWidth
+            size="small"
+            value={patientData.hcpName}
+            onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Does Patient Still Have an Active Wound"
+            fullWidth
+            size="small"
+            value={patientData.hcpName}
+            onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
+          />
+        </Grid>
+      </Grid>
+    </form>
+  ) : (
+    <form>
+      {/* Your form fields go here */}
+    </form>
+  )}
+</Paper>
 
-            {/* Checklist Container */}
-            <Paper elevation={3} style={{ padding: '16px', marginTop: '16px' }}>
-              <Typography variant="h6" style={{textAlign: 'center'}}>Check List</Typography>
-              <Grid container spacing={2} className="checkbox-grid">
+          
+           <WoundInfoTable />
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              {/* Add your content that should be on the left */}
+            </div>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            {/* Content on the right */}
+            <Container maxWidth="sm" style={{ marginTop: '16px', marginBottom: '16px' }}>
+              <Paper elevation={3} style={{ padding: '16px' }}>
+                <Typography variant="h6" style={{ textAlign: 'center' }}>Patient Details</Typography>
+                {patientData ? (
+                  <div>
+                    <p>Patient Name: {patientData.patientName}</p>
+                    <p>Account: {patientData.accountName}</p>
+                    <p>Rx Number: {patientData.trnRxId}</p>
+                    <p>Tika ID: {}</p>
+                    <p>HCP Name: {patientData.hcpName}</p>
+                    <p>
+                      Territory: {patientData.accAddress1} {patientData.accCity} {patientData.accState} {patientData.accZip}
+                    </p>
+                    {/* Display other patient details as needed */}
+                  </div>
+                ) : (
+                  <p>No patient data available.</p>
+                )}
+              </Paper>
+
+              {/* Checklist Container */}
+              <Paper elevation={3} style={{ padding: '16px', marginTop: '16px' }}>
+                <Typography variant="h6" style={{ textAlign: 'center' }}>Checklist</Typography>
+                <Grid container spacing={2} className="checkbox-grid">
                 <Grid item xs={6}>
                   <FormGroup>
                     <FormControlLabel
@@ -138,11 +283,49 @@ export function ReadyForReview() {
                     />
                   </FormGroup>
                 </Grid>
-              </Grid>
-            </Paper>
-          </Container>
+                </Grid>
+                <TextField
+    label="Add a Comment"
+    fullWidth
+    multiline
+    rows={4}
+    variant="outlined"
+    style={{ marginTop: '16px' }}
+  />
+
+  {/* Buttons */}
+  <Grid container spacing={2} style={{ marginTop: '16px' }}>
+    <Grid item xs={6}>
+      <Button variant="contained" color="primary" fullWidth>
+       Send for Re-faxing
+      </Button>
+    </Grid>
+    <Grid item xs={6}>
+      <Button variant="contained" color="secondary" fullWidth>
+       Prepare for NetSuite Submission
+      </Button>
+    </Grid>
+  </Grid>
+</Paper>      
+            </Container>
+          </Grid>
         </Grid>
-      </Grid>
+        <Grid container spacing={2} justifyContent="space-between" style={{ marginTop: '16px' }}>
+  <Grid item>
+    <Button variant="contained" color="primary">
+      Save
+    </Button>
+  </Grid>
+  <Grid item style={{ marginLeft: 'auto' }}>
+    <Button variant="contained" color="secondary">
+      Discard
+    </Button>
+  </Grid>
+</Grid>
+
+      </Container>
+     
+          
     </>
   );
 }
