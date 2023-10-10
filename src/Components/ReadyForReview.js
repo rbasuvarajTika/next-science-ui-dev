@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { usePatientData } from './PatientDataContext'; // Import the custom hook
-import { Grid, Container, Typography, Paper, FormGroup, FormControlLabel, Checkbox ,Button, TextField} from '@mui/material';
+import { Grid, Container,Table,TableHead,TableRow,TableBody, TableCell,Typography, Paper, FormGroup, FormControlLabel, Checkbox ,Button, TextField,TableContainer} from '@mui/material';
 import PagingTabs from './PagingTabs';
-import PatientDetailsForm from './PatientDetailsForm';
 import WoundInfoTable from './WoundInfoTable';
+import ProviderInfo from './ProviderInfo';
 
 
 export function ReadyForReview() {
@@ -77,11 +77,20 @@ export function ReadyForReview() {
           />
         </Grid>
         <Grid item xs={12} sm={4}>
+            <TextField
+              label="Last 4 of SSN"
+              fullWidth
+              size="small"
+          value={patientData.ssn}
+          onChange={(e) => handlePatientDataChange('SSN', e.target.value)}
+            />
+          </Grid>
+        <Grid item xs={12} sm={4}>
           <TextField
             label="City"
             fullWidth
             size="small"
-            value={patientData.patientCity}
+            value={patientData.city}
             onChange={(e) => handlePatientDataChange('patientCity', e.target.value)}
           />
         </Grid>
@@ -90,7 +99,7 @@ export function ReadyForReview() {
             label="State"
             fullWidth
             size="small"
-            value={patientData.patientState}
+            value={patientData.state}
             onChange={(e) => handlePatientDataChange('patientState', e.target.value)}
           />
         </Grid>
@@ -99,7 +108,7 @@ export function ReadyForReview() {
             label="ZIP"
             fullWidth
             size="small"
-            value={patientData.patientZip}
+            value={patientData.zip}
             onChange={(e) => handlePatientDataChange('patientZip', e.target.value)}
           />
         </Grid>
@@ -116,7 +125,7 @@ export function ReadyForReview() {
             label="Sales Rep Name"
             fullWidth
             size="small"
-            value={patientData.hcpName}
+            value={patientData.repName}
             onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
           />
         </Grid>
@@ -125,7 +134,7 @@ export function ReadyForReview() {
             label="Sales Rep Cell"
             fullWidth
             size="small"
-            value={patientData.hcpName}
+            value={patientData.repPhoneNo}
             onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
           />
         </Grid>
@@ -134,7 +143,7 @@ export function ReadyForReview() {
             label="Place of Service"
             fullWidth
             size="small"
-            value={patientData.hcpName}
+            value={patientData.placeOfService}
             onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
           />
         </Grid>
@@ -143,7 +152,7 @@ export function ReadyForReview() {
             label="Order Information"
             fullWidth
             size="small"
-            value={patientData.hcpName}
+            value={patientData.orderType}
             onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
           />
         </Grid>
@@ -152,8 +161,17 @@ export function ReadyForReview() {
             label="Does Patient Still Have an Active Wound"
             fullWidth
             size="small"
-            value={patientData.hcpName}
+            value={patientData.woundActive}
             onChange={(e) => handlePatientDataChange('hcpName', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={5}>
+          <TextField
+            label="Distributor"
+            fullWidth
+            size="small"
+            value={patientData.distributorId}
+            onChange={(e) => handlePatientDataChange('shipToAddress', e.target.value)}
           />
         </Grid>
       </Grid>
@@ -167,6 +185,12 @@ export function ReadyForReview() {
 
           
            <WoundInfoTable />
+
+          
+  <div style={{maxWidth:"100%"}}> 
+
+  <ProviderInfo/>
+</div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               {/* Add your content that should be on the left */}
@@ -183,10 +207,10 @@ export function ReadyForReview() {
                     <p>Patient Name: {patientData.patientName}</p>
                     <p>Account: {patientData.accountName}</p>
                     <p>Rx Number: {patientData.trnRxId}</p>
-                    <p>Tika ID: {}</p>
+                    <p>Tika ID: {patientData.patientId}</p>
                     <p>HCP Name: {patientData.hcpName}</p>
                     <p>
-                      Territory: {patientData.accAddress1} {patientData.accCity} {patientData.accState} {patientData.accZip}
+                      Territory: {patientData.shipToAddress} {patientData.city} {patientData.state} {patientData.zip}
                     </p>
                     {/* Display other patient details as needed */}
                   </div>

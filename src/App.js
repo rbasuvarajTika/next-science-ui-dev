@@ -15,6 +15,7 @@ import PatientDetailsForm from './Components/PatientDetailsForm';
 import { FaxView } from './Components/FaxView';
 import { ReadyForReview } from './Components/ReadyForReview';
 import { PatientDataProvider } from './Components/PatientDataContext';
+import KitNumberInfo from './Components/KitNumberInfo';
 
 function App() {
   const { userRole } = useAuth(); // Get the user's role from the context
@@ -84,6 +85,11 @@ function App() {
       path: '/review',
       element: userRole === 'Admin' ? <ReadyForReview /> : <Navigate to="/" />,
     },
+    {
+      path: '/Kit',
+      element: userRole === 'Admin' ? <KitNumberInfo /> : <Navigate to="/" />,
+    },
+    
   ];
 
   return (

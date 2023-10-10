@@ -18,9 +18,13 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Select, // Import Select component
+  MenuItem,
+  InputLabel
   } from '@mui/material';
 import { ReadyForReview } from './ReadyForReview';
 import WoundInfoTable from './WoundInfoTable';
+import ProviderInfo from './ProviderInfo';
   const data = [
     { id: 1, name: 'Provider 1', npi: '1234567890' },
     { id: 2, name: 'Provider 2', npi: '9876543210' },
@@ -32,6 +36,7 @@ function PatientDetailsForm() {
   const [patientName, setPatientName] = useState('');
   const [cellPhone, setCellPhone] = useState('');
   const [shipToAddress, setShipToAddress] = useState('');
+  const [ssn, setSsn] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [zip, setZip] = useState('');
@@ -40,6 +45,7 @@ function PatientDetailsForm() {
   const [salesRepCell, setSalesRepCell] = useState('');
   const [yesNoValue, setYesNoValue] = useState('');
   const [placeOfService, setPlaceOfService] = useState(''); // Define placeOfService state
+  const [distributor, setDistributor] = useState('');
   const [orderInformation, setOrderInformation] = useState(''); // Define orderInformation state
   const [activeWound, setActiveWound] = useState(''); 
   
@@ -61,9 +67,10 @@ function PatientDetailsForm() {
         };
   
         // Make a GET request to the API using the trnRxId parameter
-        const response = await axios.get(`/api/v1/fax/rxTrackerDetailList/${trnRxId}`, config);
+        const response = await axios.get(`/api/v1/fax/rxpatient/${trnRxId}`, config);
         
         const responseData = response.data;
+        console.log(responseData);
         console.log('isReadyForReview:', isReadyForReview);
         console.log('patientNamebefore:', patientName);
 
@@ -75,13 +82,18 @@ function PatientDetailsForm() {
           console.log(patientData.patientName);
           setCellPhone(patientData.cellPhone);
           setShipToAddress(patientData.shipToAddress);
-          setCity(patientData.patientCity);
-          setState(patientData.patientState);
-           setZip(patientData.patientZip);
+          setSsn(patientData.ssn)
+          setCity(patientData.city);
+          setState(patientData.state);
+           setZip(patientData.zip);
          setDateOfBirth(patientData.dateOfBirth); 
         // console.log(moment(patientData.dateOfBirth));// Parse dateOfBirth as a Moment.js object
-          setSalesRepName(patientData.salesRepName);
-          setSalesRepCell(patientData.salesRepCell);
+          setSalesRepName(patientData.repName);
+          setSalesRepCell(patientData.repPhoneNo);
+          setPlaceOfService(patientData.placeOfService);
+          setDistributor(patientData.distributorId);
+          setOrderInformation(patientData.orderType);
+          setActiveWound(patientData.woundActive)
             setYesNoValue(patientData.yesNoValue);
             setPatient(patientData);
             
@@ -173,6 +185,15 @@ function PatientDetailsForm() {
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
+              label="Last 4 of SSN"
+              fullWidth
+              size="small"
+             value={ssn}
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
               label="City"
               fullWidth
               size="small"
@@ -181,14 +202,20 @@ function PatientDetailsForm() {
             />
           </Grid>
           <Grid item xs={12} sm={2}>
-  <TextField
-    label="State"
-    fullWidth
-    size="small"
-    value={state}
-    onChange={(e) => setState(e.target.value)}
-  />
-</Grid>
+            <Select
+              label="State"
+              fullWidth
+              size="small"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+            >
+              <MenuItem value={state}>{state}</MenuItem> {/* Placeholder */}
+              {/* Define options for the State dropdown */}
+              <MenuItem value="State1">State1</MenuItem>
+              <MenuItem value="State2">State2</MenuItem>
+              {/* Add more options as needed */}
+            </Select>
+          </Grid>
 <Grid item xs={12} sm={2}>
   <TextField
     label="ZIP"
@@ -200,7 +227,7 @@ function PatientDetailsForm() {
 </Grid>
 <Grid item xs={12} sm={4}>
   <TextField
-    label="Date of Birth"
+   label="DOB"
     fullWidth
     size="small"
     value={dateOfBirth}
@@ -225,44 +252,78 @@ function PatientDetailsForm() {
               onChange={(e) => setSalesRepCell(e.target.value)}
             />
           </Grid>
+
           <Grid item xs={12} sm={6}>
-        <TextField
-          label="Place of Service"
+      <InputLabel htmlFor="order-information">Place of Service </InputLabel>
+
+        <Select
           fullWidth
           size="small"
           value={placeOfService}
           onChange={(e) => setPlaceOfService(e.target.value)}
-        />
+        >
+           <MenuItem value={placeOfService}>{placeOfService}</MenuItem>
+           <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+              </Select>
+      </Grid>
+         
+      <Grid item xs={12} sm={6}>
+      <InputLabel htmlFor="order-information">Distributor </InputLabel>
+
+        <Select
+          fullWidth
+          size="small"
+          value={distributor}
+          onChange={(e) => setOrderInformation(e.target.value)}
+        >
+          <MenuItem value={distributor}>{distributor}</MenuItem>
+           <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+              </Select>
       </Grid>
 
       {/* Order Information */}
       <Grid item xs={12} sm={6}>
-        <TextField
+      <InputLabel htmlFor="order-information">Order Information</InputLabel>
+        <Select
           label="Order Information"
           fullWidth
           size="small"
           value={orderInformation}
           onChange={(e) => setOrderInformation(e.target.value)}
-        />
+        >
+          <MenuItem value={orderInformation}>{orderInformation}</MenuItem>
+           <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+              </Select>
       </Grid>
 
       {/* Does Patient Still Have an Active Wound */}
       <Grid item xs={12} sm={6}>
-        <TextField
-          label="Does Patient Still Have an Active Wound"
-          fullWidth
-          size="small"
-          value={activeWound}
-          onChange={(e) => setActiveWound(e.target.value)}
-        />
-      </Grid>
+      <InputLabel htmlFor="activeWound">Does Patient Still Have an Active Wound</InputLabel>
+            <Select
+              label="Does Patient Still Have an Active Wound"
+              fullWidth
+              size="small"
+              value={activeWound}
+              onChange={(e) => setActiveWound(e.target.value)}
+            >
+              <MenuItem value={activeWound}>{activeWound}</MenuItem>
+              {/* Define options for the Active Wound dropdown */}
+              <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+              {/* Add more options as needed */}
+            </Select>
+          </Grid>
     </Grid>
       </form>
     </Container>
      
-
+<div style={{maxWidth:"50%"}}> 
     <WoundInfoTable/>
-<TableContainer component={Paper} sx={{
+    </div>
+{/* <TableContainer component={Paper} sx={{
           width: '100%',
           maxWidth: '60px',
           maxHeight:'360px',
@@ -275,6 +336,7 @@ function PatientDetailsForm() {
           <TableCell>Provider Name</TableCell>
           <TableCell>NPI</TableCell>
           <TableCell>Select</TableCell>
+           
         </TableRow>
       </TableHead>
       <TableBody>
@@ -293,7 +355,11 @@ function PatientDetailsForm() {
   ))}
 </TableBody>
     </Table>
-  </TableContainer>
+  </TableContainer> */}
+  <div style={{maxWidth:"50%"}}> 
+
+  <ProviderInfo/>
+</div>
             <Grid container spacing={2} justifyContent="flex-end" style={{ marginTop: '1rem' }}>
                 <Grid item>
                 <Link className='link' to='/review'>
