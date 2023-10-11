@@ -19,12 +19,16 @@ import {
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import KitNumberInfo from './KitNumberInfo';
+import { useParams } from 'react-router-dom';
+
 
 export default function WoundInfoTable() {
   const [woundData, setWoundData] = useState([]);
   const [isAddClicked, setIsAddClicked] = useState(false);
   const [selectedRowToDelete, setSelectedRowToDelete] = useState(null);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const { trnRxId } = useParams();
+console.log("trnFaxId", trnRxId);
   const [newRowData, setNewRowData] = useState({
     woundNo: '',
     woundLocation: '',
@@ -49,7 +53,7 @@ export default function WoundInfoTable() {
         };
 
         // Make a GET request to the API to fetch wound data
-        const response = await axios.get('/api/v1/fax/rxTrackerWoundList', config);
+        const response = await axios.get(`/api/v1/fax/woundInfo/${trnRxId}`, config);
         const responseData = response.data;
 
         console.log(responseData);
@@ -308,7 +312,7 @@ export default function WoundInfoTable() {
            
 
       </TableContainer>
-      <KitNumberInfo/>
+      <KitNumberInfo trnRxId={trnRxId}/>
       <Dialog
         open={deleteConfirmationOpen}
         onClose={cancelDelete}

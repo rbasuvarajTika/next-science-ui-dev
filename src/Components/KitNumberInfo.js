@@ -19,6 +19,8 @@ import {
   } from '@mui/material';
   import React, { useState, useEffect } from 'react';
   import axios from 'axios';
+  import { useParams } from 'react-router-dom';
+
   
   export default function KitNumberInfo() {
     const [woundData, setWoundData] = useState([]);
@@ -32,6 +34,8 @@ import {
     });
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [selectedRowToDelete, setSelectedRowToDelete] = useState(null);
+  const { trnRxId } = useParams();
+
 
     useEffect(() => {
       const fetchData = async () => {
@@ -44,7 +48,7 @@ import {
           };
   
           // Make a GET request to the API to fetch wound data
-          const response = await axios.get('/api/v1/fax/productInfo', config);
+          const response = await axios.get(`/api/v1/fax/productInfo/${trnRxId}`, config);
           const responseData = response.data;
           console.log(responseData);
           console.log(responseData);

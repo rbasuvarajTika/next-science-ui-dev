@@ -47,7 +47,11 @@ function PatientDetailsForm() {
   const [placeOfService, setPlaceOfService] = useState(''); // Define placeOfService state
   const [distributor, setDistributor] = useState('');
   const [orderInformation, setOrderInformation] = useState(''); // Define orderInformation state
-  const [activeWound, setActiveWound] = useState(''); 
+  const [woundActive, setActiveWound] = useState(''); 
+  const [patientId, setPatientId] = useState(''); 
+   const [trnFaxId, setTrnFaxId] = useState('');
+   const [faxId, setFaxId] = useState('');
+
   
   const [patientData, setPatientData] = useState(null);
   const [isReadyForReview, setIsReadyForReview] = useState(false); // Track button click
@@ -83,17 +87,21 @@ function PatientDetailsForm() {
           setCellPhone(patientData.cellPhone);
           setShipToAddress(patientData.shipToAddress);
           setSsn(patientData.ssn)
+          console.log("ssn", patientData.ssn);
           setCity(patientData.city);
           setState(patientData.state);
            setZip(patientData.zip);
          setDateOfBirth(patientData.dateOfBirth); 
-        // console.log(moment(patientData.dateOfBirth));// Parse dateOfBirth as a Moment.js object
           setSalesRepName(patientData.repName);
           setSalesRepCell(patientData.repPhoneNo);
           setPlaceOfService(patientData.placeOfService);
           setDistributor(patientData.distributorId);
           setOrderInformation(patientData.orderType);
           setActiveWound(patientData.woundActive)
+          setPatientId(patientData.patientId);
+          setTrnFaxId(patientData.trnFaxId);
+          setFaxId(patientData.faxId);
+          console.log("PAtient", patientData.patientId);
             setYesNoValue(patientData.yesNoValue);
             setPatient(patientData);
             
@@ -110,28 +118,51 @@ function PatientDetailsForm() {
   
     fetchData();
   }, [trnRxId]);
- 
-  // useEffect(() => {
-  //   // Convert the dateOfBirth value to a Moment.js object
-  //   const dateOfBirthMoment = moment(dateOfBirth);
-  //   const currentDateMoment = moment();
-
-  //   // Check if dateOfBirth is before the current date
-  //   const isDateOfBirthBeforeCurrentDate = dateOfBirthMoment.isBefore(currentDateMoment);
-
-  //   // You can use isDateOfBirthBeforeCurrentDate in your logic
-  //   if (isDateOfBirthBeforeCurrentDate) {
-  //     // Do something when dateOfBirth is before the current date
-  //     console.log('Date of Birth is before the current date.');
-  //   } else {
-  //     // Do something else when dateOfBirth is not before the current date
-  //     console.log('Date of Birth is after or equal to the current date.');
-  //   }
-  // }, [dateOfBirth]);
-  //  const handleYesNoChange = (event) => {
-  //    setYesNoValue(event.target.value);
-  // };
+  const handleSave = async () => {
+    // Get the token from localStorage
+    const token = localStorage.getItem('token');
   
+    // Send the data to your API for saving
+    const dataToSave = {
+     patientId: patientId,
+     trnFaxId:trnFaxId,
+     faxId:faxId,
+      patientFullName: patientName,
+      cellPhone: cellPhone,
+      shipToAddress: shipToAddress,
+      ssn: ssn,
+      city:  city,
+      state:state,
+      zip: zip,
+      dateOfBirth: dateOfBirth,
+      repName: salesRepName,
+      repPhoneNo:salesRepCell,
+      placeOfService: placeOfService,
+      distributorId: distributor,
+      orderType: orderInformation,
+      woundActive:woundActive,
+    };
+  
+    try {
+      // Send a PUT request to your API to save the data and include the authorization header
+      const response = await fetch(`/api/v1/fax/rxpatient`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Include the token in the headers
+        },
+        body: JSON.stringify(dataToSave),
+      });
+      if (response.ok) {
+        // Data saved successfully
+        alert('Data saved successfully.');
+      } else {
+        alert('Error saving data.');
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  };
   return (
     <>
     
@@ -156,7 +187,7 @@ function PatientDetailsForm() {
           <Grid item xs={12} sm={4}>
          
             <TextField
-              label={"PatientName"}
+              label={"Patient Name"}
               fullWidth
               id="patientName"
                     size="small"
@@ -189,7 +220,7 @@ function PatientDetailsForm() {
               fullWidth
               size="small"
              value={ssn}
-              onChange={(e) => setCity(e.target.value)}
+              onChange={(e) => setSsn(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -306,10 +337,10 @@ function PatientDetailsForm() {
               label="Does Patient Still Have an Active Wound"
               fullWidth
               size="small"
-              value={activeWound}
+              value={woundActive}
               onChange={(e) => setActiveWound(e.target.value)}
             >
-              <MenuItem value={activeWound}>{activeWound}</MenuItem>
+              <MenuItem value={woundActive}>{woundActive}</MenuItem>
               {/* Define options for the Active Wound dropdown */}
               <MenuItem value="Yes">Yes</MenuItem>
               <MenuItem value="No">No</MenuItem>
@@ -317,11 +348,15 @@ function PatientDetailsForm() {
             </Select>
           </Grid>
     </Grid>
+    
       </form>
+      <Button variant="contained" color="primary" onClick={handleSave}>
+          Save
+        </Button>
     </Container>
      
 <div style={{maxWidth:"50%"}}> 
-    <WoundInfoTable/>
+    <WoundInfoTable trnFaxId ={trnFaxId}/>
     </div>
 {/* <TableContainer component={Paper} sx={{
           width: '100%',
