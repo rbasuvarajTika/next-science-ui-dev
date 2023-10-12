@@ -393,7 +393,7 @@ function PatientDetailsForm() {
   </TableContainer> */}
   <div style={{maxWidth:"50%"}}> 
 
-  <ProviderInfo/>
+  <ProviderInfo trnRxId={trnRxId}/>
 </div>
             <Grid container spacing={2} justifyContent="flex-end" style={{ marginTop: '1rem' }}>
                 <Grid item>

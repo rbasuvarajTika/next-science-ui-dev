@@ -27,6 +27,8 @@ export default function WoundInfoTable() {
   const [isAddClicked, setIsAddClicked] = useState(false);
   const [selectedRowToDelete, setSelectedRowToDelete] = useState(null);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [selectedRowToEdit, setSelectedRowToEdit] = useState(null);
+
   const { trnRxId } = useParams();
 console.log("trnFaxId", trnRxId);
   const [newRowData, setNewRowData] = useState({
@@ -139,6 +141,26 @@ console.log("trnFaxId", trnRxId);
     setDeleteConfirmationOpen(false);
     setSelectedRowToDelete(null);
   };
+
+  const handleEditButtonClick = (index) => {
+    setSelectedRowToEdit(index);
+  };
+
+  // Add a "Save" button click handler
+  const handleSaveEditClick = (index) => {
+    // Save the edited data to your backend or perform any necessary actions
+    // Reset the selected row for editing
+    setSelectedRowToEdit(null);
+  };
+  const handleEditRowChange = (index, column, value) => {
+    const updatedWoundData = [...woundData];
+    updatedWoundData[index][column] = value;
+    setWoundData(updatedWoundData);
+  };
+  // Add a "Cancel" button click handler
+  const handleCancelEditClick = () => {
+    setSelectedRowToEdit(null);
+  };
   return (
     <div>
       <Button
@@ -169,9 +191,26 @@ console.log("trnFaxId", trnRxId);
           <TableBody>
             {woundData.map((wound ,index) => (
               <TableRow key={index}>
-                <TableCell>{wound.woundNo}</TableCell>
-                <TableCell>
-                  <Select
+            <TableCell>
+                  {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.woundNo}
+                      onChange={(e) => handleEditRowChange(index, 'woundNo', e.target.value)}
+                    />
+                  ) : (
+                    wound.woundNo
+                  )}
+                </TableCell>  
+                    <TableCell>
+                    {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.woundLocation}
+                      onChange={(e) => handleEditRowChange(index, 'woundLocation', e.target.value)}
+                    />
+                  ) : (
+                    <Select
                     value={wound.woundLocation}
                     // onChange={(e) => handleLocationChange(e, index)}
                   >
@@ -180,42 +219,132 @@ console.log("trnFaxId", trnRxId);
                     <MenuItem value="Location2">Location2</MenuItem>
                     {/* Add more options as needed */}
                   </Select>
+                  )}
+                  
                 </TableCell>
-                <TableCell>{wound.woundLength}</TableCell>
-                <TableCell>{wound.woundWidth}</TableCell>
-                <TableCell>{wound.woundDepth}</TableCell>
-                <TableCell>{wound.woundType}</TableCell>
-                <TableCell>
-                  <Select value={wound.drainage}>
+                <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.woundLength}
+                      onChange={(e) => handleEditRowChange(index, 'woundLength', e.target.value)}
+                    />
+                  ) : (
+                    wound.woundLength
+                  )}</TableCell>
+                  <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.woundWidth}
+                      onChange={(e) => handleEditRowChange(index, 'woundWidth', e.target.value)}
+                    />
+                  ) : (
+                    wound.woundWidth
+                  )}</TableCell>
+                  <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.woundDepth}
+                      onChange={(e) => handleEditRowChange(index, 'woundDepth', e.target.value)}
+                    />
+                  ) : (
+                    wound.woundDepth
+                  )}</TableCell>
+                  <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.woundType}
+                      onChange={(e) => handleEditRowChange(index, 'woundType', e.target.value)}
+                    />
+                  ) : (
+                    wound.woundType
+                  )}</TableCell>
+                
+                <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.drainage}
+                      onChange={(e) => handleEditRowChange(index, 'drainage', e.target.value)}
+                    />
+                  ) : (
+                    <Select value={wound.drainage}>
                     <MenuItem value={wound.drainage}>{wound.drainage}</MenuItem>
                     <MenuItem value="Location1">Location1</MenuItem>
                     <MenuItem value="Location2">Location2</MenuItem>
                   </Select>
-                </TableCell>
-                <TableCell>
-                  <Select value={wound.debrided}>
+                  )}</TableCell>
+                    
+                    <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.debrided}
+                      onChange={(e) => handleEditRowChange(index, 'debrided', e.target.value)}
+                    />
+                  ) : (
+                    <Select value={wound.debrided}>
                     <MenuItem value={wound.debrided}>{wound.debrided}</MenuItem>
                     <MenuItem value="Location1">Location1</MenuItem>
                     <MenuItem value="Location2">Location2</MenuItem>
                   </Select>
-                </TableCell>
-                <TableCell>{wound.icdCode}</TableCell>
-                <TableCell>
-                  <Select value={wound.debridedDate}>
+                  )}</TableCell>
+                <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.icdCode}
+                      onChange={(e) => handleEditRowChange(index, 'icdCode', e.target.value)}
+                    />
+                  ) : (
+                    wound.icdCode
+                  )}</TableCell>
+                
+                <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.debridedDate}
+                      onChange={(e) => handleEditRowChange(index, 'debridedDate', e.target.value)}
+                    />
+                  ) : (
+                    <Select value={wound.debridedDate}>
                     <MenuItem value={wound.debridedDate}>{wound.debridedDate}</MenuItem>
                     <MenuItem value="Location1">Location1</MenuItem>
                     <MenuItem value="Location2">Location2</MenuItem>
                   </Select>
-                </TableCell>
+                  )}</TableCell>
+                <TableCell> {selectedRowToEdit === index ? (
+                    <TextField
+                      type="text"
+                      value={wound.debridedType}
+                      onChange={(e) => handleEditRowChange(index, 'debridedType', e.target.value)}
+                    />
+                  ) : (
+                    wound.debridedType
+                  )}</TableCell>
                 <TableCell>
-            <Button
+                  {selectedRowToEdit === index ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleSaveEditClick(index)}
+                    >
+                      Save
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleEditButtonClick(index)}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </TableCell>
+           <Button
+              style={{top:'1.5rem'}}
               variant="contained"
               color="secondary"
               onClick={() => handleDeleteButtonClick(index)}
             >
               Delete
             </Button>
-          </TableCell>
               </TableRow>
             ))}
 
