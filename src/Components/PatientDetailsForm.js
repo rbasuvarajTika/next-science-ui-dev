@@ -31,7 +31,58 @@ import ProviderInfo from './ProviderInfo';
     { id: 3, name: 'Provider 3', npi: '4567890123' },
     { id: 4, name: 'Provider 4', npi: '7890123456' },
   ];
-
+  const states = [
+    'Alabama',
+    'Alaska',
+    'Arizona',
+    'Arkansas',
+    'California',
+    'Colorado',
+    'Connecticut',
+    'Delaware',
+    'Florida',
+    'Georgia',
+    'Hawaii',
+    'Idaho',
+    'Illinois',
+    'Indiana',
+    'Iowa',
+    'Kansas',
+    'Kentucky',
+    'Louisiana',
+    'Maine',
+    'Maryland',
+    'Massachusetts',
+    'Michigan',
+    'Minnesota',
+    'Mississippi',
+    'Missouri',
+    'Montana',
+    'Nebraska',
+    'Nevada',
+    'New Hampshire',
+    'New Jersey',
+    'New Mexico',
+    'New York',
+    'North Carolina',
+    'North Dakota',
+    'Ohio',
+    'Ok',
+    'Oregon',
+    'Pennsylvania',
+    'Rhode Island',
+    'SC',
+    'South Dakota',
+    'TN',
+    'Texas',
+    'Utah',
+    'Vermont',
+    'Virginia',
+    'Washington',
+    'West Virginia',
+    'Wisconsin',
+    'Wyoming',
+  ];
 function PatientDetailsForm() {
   const [patientName, setPatientName] = useState('');
   const [cellPhone, setCellPhone] = useState('');
@@ -51,10 +102,13 @@ function PatientDetailsForm() {
   const [patientId, setPatientId] = useState(''); 
    const [trnFaxId, setTrnFaxId] = useState('');
    const [faxId, setFaxId] = useState('');
+   const [selectedState, setSelectedState] = useState();
+   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   
-  const [patientData, setPatientData] = useState(null);
-  const [isReadyForReview, setIsReadyForReview] = useState(false); // Track button click
+   const [patientData, setPatientData] = useState({
+    state: '', // Initialize patientData with an object containing 'state' property
+  });  const [isReadyForReview, setIsReadyForReview] = useState(false); // Track button click
   
   const { setPatient } = usePatientData();
 
@@ -89,7 +143,10 @@ function PatientDetailsForm() {
           setSsn(patientData.ssn)
           console.log("ssn", patientData.ssn);
           setCity(patientData.city);
-          setState(patientData.state);
+          setPatientData({
+            state: patientData.state,
+            // Set other fields as well
+          });
            setZip(patientData.zip);
          setDateOfBirth(patientData.dateOfBirth); 
           setSalesRepName(patientData.repName);
@@ -101,11 +158,11 @@ function PatientDetailsForm() {
           setPatientId(patientData.patientId);
           setTrnFaxId(patientData.trnFaxId);
           setFaxId(patientData.faxId);
-          console.log("PAtient", patientData.patientId);
+          console.log("PAtient", patientData.trnFaxId);
             setYesNoValue(patientData.yesNoValue);
             setPatient(patientData);
             
-            console.log("patientNamebeforeAfter:", patientData.patientName);
+            console.log("patientData.state:", patientData.state);
             console.log("Before rendering ReadyForReview:", patientData);
         } else {
           // Handle the case where no data is returned or the structure is different
@@ -132,7 +189,7 @@ function PatientDetailsForm() {
       shipToAddress: shipToAddress,
       ssn: ssn,
       city:  city,
-      state:state,
+      state:patientData.state,
       zip: zip,
       dateOfBirth: dateOfBirth,
       repName: salesRepName,
@@ -162,6 +219,9 @@ function PatientDetailsForm() {
     } catch (error) {
       console.error('Error saving data:', error);
     }
+  };
+  const handleStateChange = (event) => {
+    setPatientData({ ...patientData, state: event.target.value });
   };
   return (
     <>
@@ -232,20 +292,23 @@ function PatientDetailsForm() {
               onChange={(e) => setCity(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
-            <Select
-              label="State"
-              fullWidth
-              size="small"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-            >
-              <MenuItem value={state}>{state}</MenuItem> {/* Placeholder */}
-              {/* Define options for the State dropdown */}
-              <MenuItem value="State1">State1</MenuItem>
-              <MenuItem value="State2">State2</MenuItem>
-              {/* Add more options as needed */}
-            </Select>
+          <Grid item xs={12} sm={3}>
+          <Select
+  name="state"
+  value={patientData.state}
+  onChange={handleStateChange}
+  onOpen={() => setDropdownOpen(true)}
+  onClose={() => setDropdownOpen(false)}
+  open={isDropdownOpen}
+>
+  {states.map((state) => (
+    <MenuItem key={state} value={state}>
+      {state}
+    </MenuItem>
+  ))}
+</Select>
+
+      
           </Grid>
 <Grid item xs={12} sm={2}>
   <TextField
@@ -306,7 +369,7 @@ function PatientDetailsForm() {
           fullWidth
           size="small"
           value={distributor}
-          onChange={(e) => setOrderInformation(e.target.value)}
+          onChange={(e) => setDistributor(e.target.value)}
         >
           <MenuItem value={distributor}>{distributor}</MenuItem>
            <MenuItem value="Yes">Yes</MenuItem>
@@ -356,7 +419,7 @@ function PatientDetailsForm() {
     </Container>
      
 <div style={{maxWidth:"50%"}}> 
-    <WoundInfoTable trnFaxId ={trnFaxId}/>
+    <WoundInfoTable trnRxId ={trnRxId} trnFaxId ={trnFaxId}/>
     </div>
 {/* <TableContainer component={Paper} sx={{
           width: '100%',

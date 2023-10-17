@@ -28,10 +28,14 @@ export default function WoundInfoTable() {
   const [selectedRowToDelete, setSelectedRowToDelete] = useState(null);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [selectedRowToEdit, setSelectedRowToEdit] = useState(null);
+  const [trnFaxId, setTrnFaxId] = useState([]);
+  const [woundNo, setwoundNo] = useState([]);
+
 
   const { trnRxId } = useParams();
-console.log("trnFaxId", trnRxId);
+
   const [newRowData, setNewRowData] = useState({
+    trnFaxId:trnRxId,
     woundNo: '',
     woundLocation: '',
     woundLength: '',
@@ -57,11 +61,19 @@ console.log("trnFaxId", trnRxId);
         // Make a GET request to the API to fetch wound data
         const response = await axios.get(`/api/v1/fax/woundInfo/${trnRxId}`, config);
         const responseData = response.data;
+        const trnFaxId = responseData.data[0].trnFaxId;
+        const woundNo = responseData.data[0].woundNo;
+        setwoundNo(woundNo);
+        console.log("woundN  ssso", woundNo);
 
+        setTrnFaxId(trnFaxId);
+        console.log("woundInforesponse",trnFaxId);
         console.log(responseData);
         if (responseData && responseData.data && responseData.data.length > 0) {
           // Update the woundData state variable with the retrieved data
           setWoundData(responseData.data);
+         
+          console.log(response.data);
         } else {
           // Handle the case where no wound data is found.
           console.error('No wound data found.');
@@ -73,7 +85,76 @@ console.log("trnFaxId", trnRxId);
 
     fetchData();
   }, []);
+  const handleSaveButtonClick = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+  
+      // Make a POST request to the API to save the new row data
+      const response = await axios.post(`/api/v1/fax/woundInfo`, newRowData, config);
+  
+      if (response.status === 200) {
+        // The data was successfully saved. You can handle the success here.
+        console.log('Data saved successfully.');
+  
+        // Reset newRowData and setIsAddClicked to false
+        setNewRowData({
+          trnFaxId:trnFaxId,
+          woundNo: '',
+          woundLocation: '',
+          woundLength: '',
+          woundWidth: '',
+          woundDepth: '',
+          woundType: '',
+          drainage: '',
+          debrided: '',
+          icdCode: '',
+          debridedDate: '',
+        });
+        setIsAddClicked(false);
+      } else {
+        // Handle any errors or validation issues here.
+        console.error('Error saving data:', response.data);
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  };
 
+
+  const handleSaveEditClick = async (index, woundId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+  
+      const updatedWoundData = woundData[index];
+  
+      // Make a PUT request to update the edited wound data
+      const response = await axios.put(`/api/v1/fax/woundInfo`, updatedWoundData, config);
+      //const woundNo = response.data.data.woundNo
+    
+      if (response.status === 200) {
+        // The data was successfully updated. You can handle the success here.
+        console.log('Data updated successfully.');
+  
+        // Reset the selected row for editing
+        setSelectedRowToEdit(null);
+      } else {
+        // Handle any errors or validation issues here.
+        console.error('Error updating data:', response.data);
+      }
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
+  };
   const handleAddButtonClick = () => {
     setIsAddClicked(true);
   };
@@ -82,76 +163,134 @@ console.log("trnFaxId", trnRxId);
     setNewRowData({ ...newRowData, [column]: value });
   };
 
-  const handleSaveButtonClick = () => {
-    // Save the data in newRowData to your backend or perform any necessary actions
-    console.log('New Row Data:', newRowData);
-    // Reset newRowData and setIsAddClicked to false
-    setNewRowData({
-      woundNo: '',
-      woundLocation: '',
-      woundLength: '',
-      woundWidth: '',
-      woundDepth: '',
-      woundType: '',
-      drainage: '',
-      debrided: '',
-      icdCode: '',
-      debridedDate: '',
-    });
-    setIsAddClicked(false);
-  };
+  // const handleSaveButtonClick = () => {
+  //   // Save the data in newRowData to your backend or perform any necessary actions
+  //   console.log('New Row Data:', newRowData);
+  //   // Reset newRowData and setIsAddClicked to false
+  //   setNewRowData({
+  //     woundNo: '',
+  //     woundLocation: '',
+  //     woundLength: '',
+  //     woundWidth: '',
+  //     woundDepth: '',
+  //     woundType: '',
+  //     drainage: '',
+  //     debrided: '',
+  //     icdCode: '',
+  //     debridedDate: '',
+  //   });
+  //   setIsAddClicked(false);
+  // };
 
   const handleCancelClick = () => {
     // Reset newRowData and setIsAddClicked to false when cancel is clicked
     setNewRowData({
+      trnFaxId:trnFaxId,
       woundNo: '',
       woundLocation: '',
       woundLength: '',
       woundWidth: '',
       woundDepth: '',
+      woundThickness:'',
       woundType: '',
       drainage: '',
       debrided: '',
       icdCode: '',
       debridedDate: '',
+      debridedType:'',
+      
     });
     setIsAddClicked(false);
   };
-  const handleDeleteButtonClick = (index) => {
-    // Implement logic to delete the row at the specified index
-    // const updatedWoundData = [...woundData];
-    // updatedWoundData.splice(index, 1);
-    // setWoundData(updatedWoundData);
-    setSelectedRowToDelete(index);
-    setDeleteConfirmationOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (selectedRowToDelete !== null) {
-      // Implement logic to delete the selected row
-      const updatedWoundData = [...woundData];
-      updatedWoundData.splice(selectedRowToDelete, 1);
-      setWoundData(updatedWoundData);
-    }
-    setDeleteConfirmationOpen(false);
-    setSelectedRowToDelete(null);
-  };
+  // const handleDeleteButtonClick = (index) => {
+  //   // Implement logic to delete the row at the specified index
+  //   // const updatedWoundData = [...woundData];
+  //   // updatedWoundData.splice(index, 1);
+  //   // setWoundData(updatedWoundData);
+  //   setSelectedRowToDelete(index);
+  //   setDeleteConfirmationOpen(true);
+  // };
+ 
+  // const confirmDelete = () => {
+  //   if (selectedRowToDelete !== null) {
+  //     // Implement logic to delete the selected row
+  //     const updatedWoundData = [...woundData];
+  //     updatedWoundData.splice(selectedRowToDelete, 1);
+  //     setWoundData(updatedWoundData);
+  //   }
+  //   setDeleteConfirmationOpen(false);
+  //   setSelectedRowToDelete(null);
+  // };
 
   const cancelDelete = () => {
     setDeleteConfirmationOpen(false);
-    setSelectedRowToDelete(null);
-  };
+     setSelectedRowToDelete(null);
+   };
 
   const handleEditButtonClick = (index) => {
-    setSelectedRowToEdit(index);
-  };
+     setSelectedRowToEdit(index);
+   };
 
-  // Add a "Save" button click handler
-  const handleSaveEditClick = (index) => {
-    // Save the edited data to your backend or perform any necessary actions
-    // Reset the selected row for editing
-    setSelectedRowToEdit(null);
+  const handleDeleteButtonClick = (index) => {
+    // Set the selected row to delete
+    setSelectedRowToDelete(index);
+  
+    // Open the delete confirmation dialog
+    setDeleteConfirmationOpen(true);
   };
+  
+  const confirmDelete = async () => {
+    if (selectedRowToDelete !== null) {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+  
+        // Prepare the body data for the delete request
+        const dataToDelete = {
+          trnFaxId: trnRxId,
+          woundNo:woundNo,
+        };
+  
+        // Make a DELETE request to delete the selected wound using its ID
+        const woundIdToDelete = woundData[selectedRowToDelete].woundId; // Adjust this according to your data structure
+  
+        const response = await axios.delete(`/api/v1/fax/woundInfoDetails`, {
+          ...config,
+          data: dataToDelete,
+        });
+  
+        if (response.status === 200) {
+          // The data was successfully deleted. You can handle the success here.
+          console.log('Data deleted successfully.');
+  
+          // Update your UI to reflect the deleted row
+          const updatedWoundData = [...woundData];
+          updatedWoundData.splice(selectedRowToDelete, 1);
+          setWoundData(updatedWoundData);
+        } else {
+          // Handle any errors or validation issues here.
+          console.error('Error deleting data:', response.data);
+        }
+      } catch (error) {
+        console.error('Error deleting data:', error);
+      }
+    }
+  
+    // Close the delete confirmation dialog and reset the selected row
+    setDeleteConfirmationOpen(false);
+    setSelectedRowToDelete(null);
+  };
+  
+  // Add a "Save" button click handler
+  // const handleSaveEditClick = (index) => {
+  //   // Save the edited data to your backend or perform any necessary actions
+  //   // Reset the selected row for editing
+  //   setSelectedRowToEdit(null);
+  // };
   const handleEditRowChange = (index, column, value) => {
     const updatedWoundData = [...woundData];
     updatedWoundData[index][column] = value;
@@ -352,19 +491,28 @@ console.log("trnFaxId", trnRxId);
               <TableRow>
                 <TableCell>
                   <TextField
+                   type="text"
                     value={newRowData.woundNo}
                     onChange={(e) => handleNewRowChange('woundNo', e.target.value)}
                   />
                 </TableCell>
+                
+
                 <TableCell>
-                  <Select
+                  <TextField
+                   type="text"
+                    value={newRowData.woundLocation}
+                    onChange={(e) => handleNewRowChange('woundLocation', e.target.value)}
+                  />
+                </TableCell>
+                  {/* <Select
                     value={newRowData.woundLocation}
                     onChange={(e) => handleNewRowChange('woundLocation', e.target.value)}
                   >
                     <MenuItem value="Location1">Location1</MenuItem>
                     <MenuItem value="Location2">Location2</MenuItem>
                   </Select>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <TextField
                     value={newRowData.woundLength}
@@ -390,6 +538,13 @@ console.log("trnFaxId", trnRxId);
                   />
                 </TableCell>
                 <TableCell>
+                  <TextField
+                   type="text"
+                    value={newRowData.drainage}
+                    onChange={(e) => handleNewRowChange('drainage', e.target.value)}
+                  />
+                </TableCell>
+                {/* <TableCell>
                   <Select
                     value={newRowData.drainage}
                     onChange={(e) => handleNewRowChange('drainage', e.target.value)}
@@ -397,8 +552,17 @@ console.log("trnFaxId", trnRxId);
                     <MenuItem value="Location1">Location1</MenuItem>
                     <MenuItem value="Location2">Location2</MenuItem>
                   </Select>
-                </TableCell>
+                </TableCell> */}  
+
+      
                 <TableCell>
+                  <TextField
+                   type="text"
+                    value={newRowData.debrided}
+                    onChange={(e) => handleNewRowChange('debrided', e.target.value)}
+                  />
+                </TableCell>
+                {/* <TableCell>
                   <Select
                     value={newRowData.debrided}
                     onChange={(e) => handleNewRowChange('debrided', e.target.value)}
@@ -406,7 +570,7 @@ console.log("trnFaxId", trnRxId);
                     <MenuItem value="Location1">Location1</MenuItem>
                     <MenuItem value="Location2">Location2</MenuItem>
                   </Select>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <TextField
                     value={newRowData.icdCode}
@@ -414,6 +578,12 @@ console.log("trnFaxId", trnRxId);
                   />
                 </TableCell>
                 <TableCell>
+                  <TextField
+                    value={newRowData.debridedDate}
+                    onChange={(e) => handleNewRowChange('debridedDate', e.target.value)}
+                  />
+                </TableCell>
+                {/* <TableCell>
                   <Select
                     value={newRowData.debridedDate}
                     onChange={(e) => handleNewRowChange('debridedDate', e.target.value)}
@@ -421,6 +591,12 @@ console.log("trnFaxId", trnRxId);
                     <MenuItem value="Location1">Location1</MenuItem>
                     <MenuItem value="Location2">Location2</MenuItem>
                   </Select>
+                </TableCell> */}
+                <TableCell>
+                  <TextField
+                    value={newRowData.debridedType}
+                    onChange={(e) => handleNewRowChange('debridedType', e.target.value)}
+                  />
                 </TableCell>
                 <TableCell>
                   <Button variant="contained" color="primary" onClick={handleSaveButtonClick}>
@@ -441,7 +617,7 @@ console.log("trnFaxId", trnRxId);
            
 
       </TableContainer>
-      <KitNumberInfo trnRxId={trnRxId}/>
+      <KitNumberInfo trnRxId={trnRxId} trnFaxId={trnFaxId}/>
       <Dialog
         open={deleteConfirmationOpen}
         onClose={cancelDelete}

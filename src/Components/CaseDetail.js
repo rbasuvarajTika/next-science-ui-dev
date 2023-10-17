@@ -35,7 +35,7 @@ export function CaseDetail({ onReset }) {
     if (token) {
       axios({
         method: 'GET',
-        url: `/api/v1/fax/getFaxPdf/1509414370`,
+        url: `/api/v1/fax/getFaxPdf/1509414999`,
         responseType: 'arraybuffer',
         headers: {
           Authorization: `Bearer ${token}`,

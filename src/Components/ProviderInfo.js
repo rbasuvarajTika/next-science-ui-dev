@@ -40,7 +40,7 @@ const states = [
   'Alaska',
   'Arizona',
   'Arkansas',
-  'California',
+  'Ca',
   'Colorado',
   'Connecticut',
   'Delaware',
@@ -71,13 +71,13 @@ const states = [
   'North Carolina',
   'North Dakota',
   'Ohio',
-  'Oklahoma',
+  'Ok',
   'Oregon',
   'Pennsylvania',
   'Rhode Island',
   'South Carolina',
   'South Dakota',
-  'Tennessee',
+  'TN',
   'Texas',
   'Utah',
   'Vermont',
@@ -100,6 +100,10 @@ export default function ProviderInfo() {
   });
   const [loading, setLoading] = useState(true);
   const [editingRowId, setEditingRowId] = useState(null);
+  const [editableOfficeData, setEditableOfficeData] = useState({ ...officeData });
+  const [selectedState, setSelectedState] = useState();
+const [isDropdownOpen, setDropdownOpen] = useState(false);
+
   const [newRow, setNewRow] = useState({
     hcp_first_Name: '',
     hcp_last_Name: '',
@@ -108,6 +112,7 @@ export default function ProviderInfo() {
   const { trnRxId } = useParams();
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,6 +128,7 @@ export default function ProviderInfo() {
        // console.log("Provider",response.data.data);
         setLoading(false);
        // console.log(response.data.data.data);
+       console.log("editableOfficeData",editableOfficeData.state);
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
@@ -176,25 +182,34 @@ export default function ProviderInfo() {
             Authorization: `Bearer ${token}`,
           },
         };
-
+  
         const response = await axios.get(`/api/v1/fax/officeInfo/${trnRxId}`, config);
         console.log("API Response", response.data.data);
-        
-        // Assuming the data array contains the information you need
+
+  
         const officeDataArray = response.data.data;
-        console.log("officeDataArraynew", officeDataArray.accountName);
-        setOfficeData(officeDataArray)
+       
+        
         // Assuming you want to use the first item in the array
         const firstOfficeData = officeDataArray[0];
-       console.log("firstOfficeData",firstOfficeData.accountName);
-        setOfficeData({
-           officeName: firstOfficeData.accountName || '',
-           cellPhone: firstOfficeData.phone || '',
-           email: firstOfficeData.email || '',
-           city: firstOfficeData.city || '',
-           state: firstOfficeData.state || '',
-           zip: firstOfficeData.zip || '',
-         });
+        console.log("firstOfficeData", firstOfficeData.trnFaxId);
+        console.log("accountId", firstOfficeData.accountId);
+
+        console.log("officeDataArraynew", officeDataArray.trnFaxId);
+  
+        // Update editableOfficeData without overwriting the entire object
+        setEditableOfficeData({
+          ...editableOfficeData,
+          accountId:firstOfficeData.accountId || '',
+          officeName: firstOfficeData.accountName || '',
+          cellPhone: firstOfficeData.phone || '',
+          email: firstOfficeData.email || '',
+          city: firstOfficeData.city || '',
+          state: firstOfficeData.state || '',
+          zip: firstOfficeData.zip || '',
+          //zip: firstOfficeData.trnFaxId || '',
+        });
+        console.log("editableOfficeData.accountId",editableOfficeData.accountId);
 
         setLoading(false);
       } catch (error) {
@@ -204,7 +219,47 @@ export default function ProviderInfo() {
     };
     fetchOfficeInfo();
   }, []);
-
+  
+  const handleSaveButtonClick = () => {
+    // Get the token from your authentication mechanism, e.g., localStorage
+    const token = localStorage.getItem('token');
+  
+    // Define the request headers with the Authorization header
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  
+    // Define the data to send to the server
+    const requestData = {
+      // Include any other fields you want to update in the API
+      accountId: editableOfficeData.accountId,
+      accountName: editableOfficeData.officeName,
+      phone: editableOfficeData.cellPhone,
+      email: editableOfficeData.email,
+      city: editableOfficeData.city,
+      state: editableOfficeData.state,
+      zip: editableOfficeData.zip,
+      faxId: editableOfficeData.faxId, // Add faxId if needed
+    };
+  
+    // Send a PUT request to update the office data
+    axios
+      .put(`/api/v1/fax/officeInfo`, requestData, config)
+      .then((response) => {
+        // Handle the response from the API if needed
+        console.log('Data saved successfully:', response.data);
+  
+        // Exit edit mode
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        console.error('Error saving data:', error);
+      });
+  };
+  
   const handleDeleteButtonClick = (rowId) => {
     setRowToDelete(rowId);
     setDeleteConfirmationOpen(true);
@@ -221,6 +276,48 @@ export default function ProviderInfo() {
     setApiData(updatedData);
     setRowToDelete(null);
   };
+
+
+  const handleOfficeNameChange = (event) => {
+    setEditableOfficeData({
+      ...editableOfficeData,
+      officeName: event.target.value,
+    });
+  };
+
+  const handleCellPhoneChange = (event) => {
+    setEditableOfficeData({
+      ...editableOfficeData,
+      cellPhone: event.target.value,
+    });
+  };
+
+  const handleOfficeEmailChange = (event) => {
+    setEditableOfficeData({
+      ...editableOfficeData,
+      email: event.target.value,
+    });
+  };
+
+  const handleCityChange = (event) => {
+    setEditableOfficeData({
+      ...editableOfficeData,
+      city: event.target.value,
+    });
+  };
+
+  const handleStateChange = (event) => {
+    editableOfficeData.state = event.target.value;
+    console.log("After Rendering",editableOfficeData.state);
+    setSelectedState(event.target.value);
+  };
+  const handleZipChange = (event) => {
+    setEditableOfficeData({
+      ...editableOfficeData,
+      zip: event.target.value,
+    });
+  };
+  console.log("editableOfficeDatawwww", editableOfficeData);
   return (
     <>
      <Button
@@ -334,17 +431,16 @@ export default function ProviderInfo() {
           </Button>
         </DialogActions>
       </Dialog>
-      {officeData && (
-        <form   style={{ marginTop: '1rem',  }}>
+      {editableOfficeData && (
+        <form style={{ marginTop: '1rem' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
-                    
-
                 fullWidth
                 label="Office Name"
                 name="officeName"
-                value={officeData.officeName}
+                value={editableOfficeData.officeName}
+                onChange={handleOfficeNameChange}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -352,7 +448,8 @@ export default function ProviderInfo() {
                 fullWidth
                 label="Cell Phone"
                 name="cellPhone"
-                value={officeData.cellPhone}
+                value={editableOfficeData.cellPhone}
+                onChange={handleCellPhoneChange}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -361,7 +458,8 @@ export default function ProviderInfo() {
                 label="Email"
                 name="email"
                 type="email"
-                value={officeData.email}
+                value={editableOfficeData.email}
+                onChange={handleOfficeEmailChange}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -369,35 +467,46 @@ export default function ProviderInfo() {
                 fullWidth
                 label="City"
                 name="city"
-                value={officeData.city}
+                value={editableOfficeData.city}
+                onChange={handleCityChange}
               />
             </Grid>
+            
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select name="state" value={officeData.state}>
-                  {states.map((state) => (
-                    <MenuItem key={state} value={state}>
-                      {state}
-                    </MenuItem>
-                    
-                  ))}
-                  <MenuItem key={officeData.state} value={officeData.state}>
-                      {officeData.state}
-                    </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+            <Select
+  name="state"
+  value={editableOfficeData.state}
+  onChange={handleStateChange}
+  onOpen={() => setDropdownOpen(true)}
+  onClose={() => setDropdownOpen(false)}
+  open={isDropdownOpen}
+>
+  {states.map((state) => (
+    <MenuItem key={state} value={state}>
+      {state}
+    </MenuItem>
+  ))}
+</Select>
+</Grid>
+              
+       
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="ZIP"
                 name="zip"
-                value={officeData.zip}
+                value={editableOfficeData.zip}
+                onChange={handleZipChange}
               />
             </Grid>
+            
           </Grid>
+          <Button variant="contained" color="primary" onClick={handleSaveButtonClick}>
+          Save
+        </Button>
+      
         </form>
+        
       )}
     </>
   );
