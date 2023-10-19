@@ -163,24 +163,7 @@ export default function WoundInfoTable() {
     setNewRowData({ ...newRowData, [column]: value });
   };
 
-  // const handleSaveButtonClick = () => {
-  //   // Save the data in newRowData to your backend or perform any necessary actions
-  //   console.log('New Row Data:', newRowData);
-  //   // Reset newRowData and setIsAddClicked to false
-  //   setNewRowData({
-  //     woundNo: '',
-  //     woundLocation: '',
-  //     woundLength: '',
-  //     woundWidth: '',
-  //     woundDepth: '',
-  //     woundType: '',
-  //     drainage: '',
-  //     debrided: '',
-  //     icdCode: '',
-  //     debridedDate: '',
-  //   });
-  //   setIsAddClicked(false);
-  // };
+ 
 
   const handleCancelClick = () => {
     // Reset newRowData and setIsAddClicked to false when cancel is clicked
@@ -202,25 +185,6 @@ export default function WoundInfoTable() {
     });
     setIsAddClicked(false);
   };
-  // const handleDeleteButtonClick = (index) => {
-  //   // Implement logic to delete the row at the specified index
-  //   // const updatedWoundData = [...woundData];
-  //   // updatedWoundData.splice(index, 1);
-  //   // setWoundData(updatedWoundData);
-  //   setSelectedRowToDelete(index);
-  //   setDeleteConfirmationOpen(true);
-  // };
- 
-  // const confirmDelete = () => {
-  //   if (selectedRowToDelete !== null) {
-  //     // Implement logic to delete the selected row
-  //     const updatedWoundData = [...woundData];
-  //     updatedWoundData.splice(selectedRowToDelete, 1);
-  //     setWoundData(updatedWoundData);
-  //   }
-  //   setDeleteConfirmationOpen(false);
-  //   setSelectedRowToDelete(null);
-  // };
 
   const cancelDelete = () => {
     setDeleteConfirmationOpen(false);
@@ -285,12 +249,6 @@ export default function WoundInfoTable() {
     setSelectedRowToDelete(null);
   };
   
-  // Add a "Save" button click handler
-  // const handleSaveEditClick = (index) => {
-  //   // Save the edited data to your backend or perform any necessary actions
-  //   // Reset the selected row for editing
-  //   setSelectedRowToEdit(null);
-  // };
   const handleEditRowChange = (index, column, value) => {
     const updatedWoundData = [...woundData];
     updatedWoundData[index][column] = value;
@@ -322,7 +280,7 @@ export default function WoundInfoTable() {
               <TableCell style={{ minWidth: 10 }}>Wound Stage</TableCell>
               <TableCell style={{ minWidth: 10 }}>Drainage</TableCell>
               <TableCell style={{ minWidth: 10 }}>Debrided</TableCell>
-              <TableCell style={{ minWidth: 10 }}>ICD-10 Code</TableCell>
+              <TableCell style={{ minWidth: 140 }}>ICD-10 Code</TableCell>
               <TableCell style={{ minWidth: 10 }}>Debridement Date</TableCell>
               <TableCell style={{ minWidth: 10 }}>Debridement Type</TableCell>
             </TableRow>
@@ -341,26 +299,29 @@ export default function WoundInfoTable() {
                     wound.woundNo
                   )}
                 </TableCell>  
-                    <TableCell>
-                    {selectedRowToEdit === index ? (
-                    <TextField
-                      type="text"
-                      value={wound.woundLocation}
-                      onChange={(e) => handleEditRowChange(index, 'woundLocation', e.target.value)}
-                    />
-                  ) : (
-                    <Select
-                    value={wound.woundLocation}
-                    // onChange={(e) => handleLocationChange(e, index)}
-                  >
-                    <MenuItem value={wound.woundLocation}>{wound.woundLocation}</MenuItem>
-                    <MenuItem value="Location1">Location1</MenuItem>
-                    <MenuItem value="Location2">Location2</MenuItem>
-                    {/* Add more options as needed */}
-                  </Select>
-                  )}
-                  
-                </TableCell>
+                <TableCell>
+          {selectedRowToEdit === index ? (
+            <Select
+          value={wound.woundLocation}
+         onChange={(e) => handleEditRowChange(index, 'woundLocation', e.target.value)}
+         >
+          <MenuItem value={wound.woundLocation}>{wound.woundLocation}</MenuItem>
+          <MenuItem value="LT">LT</MenuItem>
+          <MenuItem value="RT">RT</MenuItem>
+      {/* Add more MenuItem options as needed */}
+    </Select>
+  ) : (
+    <Select
+    value={wound.woundLocation}
+   onChange={(e) => handleEditRowChange(index, 'woundLocation', e.target.value)}
+   >
+    <MenuItem value={wound.woundLocation}>{wound.woundLocation}</MenuItem>
+   <MenuItem value="LT">LT</MenuItem>
+   <MenuItem value="RT">RT</MenuItem>
+{/* Add more MenuItem options as needed */}
+</Select>
+  )}
+</TableCell>
                 <TableCell> {selectedRowToEdit === index ? (
                     <TextField
                       type="text"
@@ -388,7 +349,7 @@ export default function WoundInfoTable() {
                   ) : (
                     wound.woundDepth
                   )}</TableCell>
-                  <TableCell> {selectedRowToEdit === index ? (
+                  {/* <TableCell> {selectedRowToEdit === index ? (
                     <TextField
                       type="text"
                       value={wound.woundType}
@@ -396,35 +357,70 @@ export default function WoundInfoTable() {
                     />
                   ) : (
                     wound.woundType
-                  )}</TableCell>
-                
+                  )}</TableCell> */}
                 <TableCell> {selectedRowToEdit === index ? (
-                    <TextField
-                      type="text"
-                      value={wound.drainage}
-                      onChange={(e) => handleEditRowChange(index, 'drainage', e.target.value)}
-                    />
-                  ) : (
-                    <Select value={wound.drainage}>
+                   
+                      
+                   <Select value={wound.woundType}
+                   onChange={(e) => handleEditRowChange(index, 'woundType', e.target.value)}>
+                 <MenuItem value={wound.woundType}>{wound.woundType}</MenuItem>
+                 <MenuItem value="i">i</MenuItem>
+                    <MenuItem value="ii">ii</MenuItem>
+                    <MenuItem value="iii">iii</MenuItem>
+                    <MenuItem value="iv">iv</MenuItem>
+               </Select>
+                 
+               ) : (
+                 <Select value={wound.woundType} 
+                 onChange={(e) => handleEditRowChange(index, 'woundType', e.target.value)}>
+                 <MenuItem value={wound.woundType}>{wound.woundType}</MenuItem>
+                 <MenuItem value="i">i</MenuItem>
+                    <MenuItem value="ii">ii</MenuItem>
+                    <MenuItem value="iii">iii</MenuItem>
+                    <MenuItem value="iv">iv</MenuItem>
+               </Select>
+               )}</TableCell>
+                <TableCell> {selectedRowToEdit === index ? (
+                   
+                      
+                      <Select value={wound.drainage}
+                      onChange={(e) => handleEditRowChange(index, 'drainage', e.target.value)}>
                     <MenuItem value={wound.drainage}>{wound.drainage}</MenuItem>
-                    <MenuItem value="Location1">Location1</MenuItem>
-                    <MenuItem value="Location2">Location2</MenuItem>
+                    <MenuItem value="Dry">Dry</MenuItem>
+                    <MenuItem value="Mod">Mod</MenuItem>
+                    <MenuItem value="Hvy">Hvy</MenuItem>
                   </Select>
-                  )}</TableCell>
                     
-                    <TableCell> {selectedRowToEdit === index ? (
-                    <TextField
-                      type="text"
-                      value={wound.debrided}
-                      onChange={(e) => handleEditRowChange(index, 'debrided', e.target.value)}
-                    />
                   ) : (
-                    <Select value={wound.debrided}>
-                    <MenuItem value={wound.debrided}>{wound.debrided}</MenuItem>
-                    <MenuItem value="Location1">Location1</MenuItem>
-                    <MenuItem value="Location2">Location2</MenuItem>
+                    <Select value={wound.drainage} 
+                    onChange={(e) => handleEditRowChange(index, 'drainage', e.target.value)}>
+                    <MenuItem value={wound.drainage}>{wound.drainage}</MenuItem>
+                    <MenuItem value="Dry">Dry</MenuItem>
+                    <MenuItem value="Mod">Mod</MenuItem>
+                    <MenuItem value="Hvy">Hvy</MenuItem>
                   </Select>
                   )}</TableCell>
+                    <TableCell> {selectedRowToEdit === index ? (
+                   
+                      
+                   <Select value={wound.debrided}
+                   onChange={(e) => handleEditRowChange(index, 'debrided', e.target.value)}>
+                 <MenuItem value={wound.debrided}>{wound.debrided}</MenuItem>
+                 <MenuItem value="1">1</MenuItem>
+                 <MenuItem value="2">2</MenuItem>
+                 
+               </Select>
+                 
+               ) : (
+                 <Select value={wound.debrided} 
+                 onChange={(e) => handleEditRowChange(index, 'debrided', e.target.value)}>
+                 <MenuItem value={wound.debrided}>{wound.debrided}</MenuItem>
+                 <MenuItem value="1">1</MenuItem>
+                 <MenuItem value="2">2</MenuItem>
+               </Select>
+               )}</TableCell>
+                 
+                    
                 <TableCell> {selectedRowToEdit === index ? (
                     <TextField
                       type="text"
@@ -442,11 +438,7 @@ export default function WoundInfoTable() {
                       onChange={(e) => handleEditRowChange(index, 'debridedDate', e.target.value)}
                     />
                   ) : (
-                    <Select value={wound.debridedDate}>
-                    <MenuItem value={wound.debridedDate}>{wound.debridedDate}</MenuItem>
-                    <MenuItem value="Location1">Location1</MenuItem>
-                    <MenuItem value="Location2">Location2</MenuItem>
-                  </Select>
+                    wound.debridedDate
                   )}</TableCell>
                 <TableCell> {selectedRowToEdit === index ? (
                     <TextField
@@ -496,23 +488,18 @@ export default function WoundInfoTable() {
                     onChange={(e) => handleNewRowChange('woundNo', e.target.value)}
                   />
                 </TableCell>
-                
-
                 <TableCell>
-                  <TextField
-                   type="text"
-                    value={newRowData.woundLocation}
-                    onChange={(e) => handleNewRowChange('woundLocation', e.target.value)}
-                  />
-                </TableCell>
-                  {/* <Select
-                    value={newRowData.woundLocation}
-                    onChange={(e) => handleNewRowChange('woundLocation', e.target.value)}
-                  >
-                    <MenuItem value="Location1">Location1</MenuItem>
-                    <MenuItem value="Location2">Location2</MenuItem>
-                  </Select>
-                </TableCell> */}
+                <Select
+      value={newRowData.woundLocation}
+      onChange={(e) => handleNewRowChange('woundLocation', e.target.value)}
+     
+    >
+      <MenuItem value={newRowData.woundLocation}>{newRowData.woundLocation}</MenuItem>
+      <MenuItem value="RT">RT</MenuItem>
+      <MenuItem value="LT">LT</MenuItem>
+      {/* Add more MenuItem options as needed */}
+    </Select>
+    </TableCell>  
                 <TableCell>
                   <TextField
                     value={newRowData.woundLength}
@@ -532,36 +519,47 @@ export default function WoundInfoTable() {
                   />
                 </TableCell>
                 <TableCell>
-                  <TextField
-                    value={newRowData.woundType}
-                    onChange={(e) => handleNewRowChange('woundType', e.target.value)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                   type="text"
-                    value={newRowData.drainage}
-                    onChange={(e) => handleNewRowChange('drainage', e.target.value)}
-                  />
-                </TableCell>
-                {/* <TableCell>
+                  
                   <Select
-                    value={newRowData.drainage}
-                    onChange={(e) => handleNewRowChange('drainage', e.target.value)}
-                  >
-                    <MenuItem value="Location1">Location1</MenuItem>
-                    <MenuItem value="Location2">Location2</MenuItem>
-                  </Select>
-                </TableCell> */}  
-
-      
-                <TableCell>
-                  <TextField
-                   type="text"
-                    value={newRowData.debrided}
-                    onChange={(e) => handleNewRowChange('debrided', e.target.value)}
-                  />
+      value={newRowData.woundType}
+      onChange={(e) => handleNewRowChange('woundType', e.target.value)}
+     
+    >
+      <MenuItem value={newRowData.woundType}>{newRowData.woundType}</MenuItem>
+                    <MenuItem value="i">i</MenuItem>
+                    <MenuItem value="ii">ii</MenuItem>
+                    <MenuItem value="iii">iii</MenuItem>
+                    <MenuItem value="iv">iv</MenuItem>
+      {/* Add more MenuItem options as needed */}
+    </Select>
                 </TableCell>
+                
+                <TableCell>
+         <Select
+      value={newRowData.drainage}
+      onChange={(e) => handleNewRowChange('drainage', e.target.value)}
+     
+    >
+      <MenuItem value={newRowData.drainage}>{newRowData.drainage}</MenuItem>
+                    <MenuItem value="Dry">Dry</MenuItem>
+                    <MenuItem value="Mod">Mod</MenuItem>
+                    <MenuItem value="Hvy">Hvy</MenuItem>
+      {/* Add more MenuItem options as needed */}
+    </Select>
+    </TableCell>
+    <TableCell>
+         <Select
+      value={newRowData.debrided}
+      onChange={(e) => handleNewRowChange('debrided', e.target.value)}
+     
+    >
+      <MenuItem value={newRowData.debrided}>{newRowData.debrided}</MenuItem>
+                 <MenuItem value="1">1</MenuItem>
+                 <MenuItem value="2">2</MenuItem>
+      {/* Add more MenuItem options as needed */}
+    </Select>
+    </TableCell>
+               
                 {/* <TableCell>
                   <Select
                     value={newRowData.debrided}

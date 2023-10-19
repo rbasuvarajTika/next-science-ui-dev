@@ -76,7 +76,7 @@ export default function AdminPage() {
               onChange={handleChange}
               size='small'
             />
-            <Link href="#" to="/createnewuser">
+            <Link href="#" to="/nsrxmgt/createnewuser">
               <Button variant="contained" style={{ backgroundColor: '#ff5722', color: '#000' }}>
                 Create New User
               </Button>

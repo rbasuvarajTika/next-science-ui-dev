@@ -8,8 +8,11 @@ import ListAltSharpIcon from '@mui/icons-material/ListAltSharp';
 import MicrowaveSharpIcon from '@mui/icons-material/MicrowaveSharp';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function PagingTabs() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -18,7 +21,8 @@ export default function PagingTabs() {
 
 const logoutHandle=()=>{
   localStorage.clear()
-  window.location.href='/'
+  
+  navigate("/nsrxmgt/");
 }
 
   return (
@@ -27,7 +31,7 @@ const logoutHandle=()=>{
         width: '100%',
         height: '100px'}}>
     <Stack spacing={2} direction="row" sx={{float:"right"}}>
-    <Link className=" link" to='/'>   <Button
+    <Link className=" link" to='/nsrxmgt/'>   <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -37,7 +41,7 @@ const logoutHandle=()=>{
       >
         Logout
       </Button></Link>
-     <Link className='link' to='/adminpage'> <Button
+     <Link className='link' to='/nsrxmgt/adminpage'> <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -47,7 +51,7 @@ const logoutHandle=()=>{
       >
         Admin
       </Button></Link>
-      <Link className='link' to='/fax'>   <Button
+      <Link className='link' to='/nsrxmgt/fax'>   <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -57,7 +61,7 @@ const logoutHandle=()=>{
       >
        Fax List
       </Button>     </Link>
-      <Link className='link' to='/rxlist'>    <Button
+      <Link className='link' to='/nsrxmgt/rxlist'>    <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -67,7 +71,7 @@ const logoutHandle=()=>{
       >
         RxTracker List
       </Button> </Link>
-      <Link className='link' to='/casedetail/:trnRxId'>  <Button
+      <Link className='link' to='/nsrxmgt/casedetail/:trnRxId'>  <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"

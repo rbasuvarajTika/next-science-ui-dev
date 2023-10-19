@@ -27,7 +27,7 @@ function App() {
       <div className="App">
         <Router>
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/nsrxmgt" element={<LoginPage />} />
             {/* Handle redirection to a 404 page for unknown routes */}
             <Route
               path="*"
@@ -45,48 +45,48 @@ function App() {
   // Define admin-specific routes
   const adminRoutes = [
     {
-      path: '/adminpage',
+      path: '/nsrxmgt/adminpage',
       element: userRole === 'Admin' ? <AdminPage /> : <Navigate to="/" />,
     },
     {
-      path: '/fax',
+      path: '/nsrxmgt/fax',
       element: userRole === 'User' || 'Admin'  ? <FaxTable /> : <Navigate to="/" />,
     },
     {
-      path: '/faxview/:faxId',
+      path: '/nsrxmgt/faxview/:faxId',
       element: userRole === 'User' || 'Admin'  ? <FaxView/> : <Navigate to="/" />,
     },
     {
-      path: '/edit-user/:userId',
+      path: '/nsrxmgt/edit-user/:userId',
       element: userRole === 'Admin' ? <EditUser /> : <Navigate to="/" />,
     },
     {
-      path: '/createnewuser',
+      path: '/nsrxmgt/createnewuser',
       element: userRole === 'Admin' ? <CreateNewUser /> : <Navigate to="/" />,
     },
     {
-      path: '/duplicatefax/:faxId',
+      path: '/nsrxmgt/duplicatefax/:faxId',
       element: userRole === 'Admin' ? <DuplicateFax /> : <Navigate to="/" />,
     },
     {
-      path: '/rxlist',
+      path: '/nsrxmgt/rxlist',
       element: userRole === 'Admin' ? <RxTracker /> : <Navigate to="/" />,
     },
     {
-      path: '/casedetail/:trnRxId',
+      path: '/nsrxmgt/casedetail/:trnRxId',
       element: userRole === 'Admin' ? <CaseDetail /> : <Navigate to="/" />,
     },
     {
-      path: '/patientdetails',
+      path: '/nsrxmgt/patientdetails',
       element: userRole === 'Admin' ? <PatientDetailsForm /> : <Navigate to="/" />,
     },
 
     {
-      path: '/review',
+      path: '/nsrxmgt/review',
       element: userRole === 'Admin' ? <ReadyForReview /> : <Navigate to="/" />,
     },
     {
-      path: '/Kit',
+      path: '/nsrxmgt/Kit',
       element: userRole === 'Admin' ? <KitNumberInfo /> : <Navigate to="/" />,
     },
     
@@ -98,9 +98,9 @@ function App() {
         
       <Router>
         <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/confirmemail" element={<ConfirmEmail />} />
-          <Route path="/resetpassword/:userId" element={<ResetPassword />} />
+          <Route path= "/nsrxmgt"  element={<LoginPage />} />
+          <Route path="/nsrxmgt/confirmemail" element={<ConfirmEmail />} />
+          <Route path="/nsrxmgt/resetpassword/:userId" element={<ResetPassword />} />
           {/* The "/fax" route is accessible to everyone */}
           {/* <Route path="/fax" element={<FaxTable />} /> */}
           {adminRoutes.map((route, index) => (

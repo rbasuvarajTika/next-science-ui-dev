@@ -12,17 +12,19 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
+ 
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
- 
+  const navigate = useNavigate();
   
   const axiosLogin = async () => {
     try {
-      const response = await axios.post('/api/v1/auth/signin', {
+     //const response = await axios.post('https://dev.tika.mobi:8443/next-service/api/v1/auth/signin', {
+       const response = await axios.post('/api/v1/auth/signin', {
         userName: email,
         password: password,
       });
@@ -50,15 +52,16 @@ export default function LoginPage() {
     const loginRole = await axiosLogin();
 
     if (loginRole === 'Admin') {
-      window.location.href = '/adminpage'; // Redirect to AdminPage for Admin
+      navigate("/nsrxmgt/adminpage");
+      
     } else if (loginRole === 'User') {
-      window.location.href = '/fax'; // Redirect to Fax page for User
+      navigate("/nsrxmgt/fax");
+     
     } else {
 
       alert('Login failed. Incorrect Email or Password.');
     }
   };
-
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">

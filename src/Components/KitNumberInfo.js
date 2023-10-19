@@ -39,6 +39,7 @@ import {
       wnd1: false,
       wnd2: false,
       wnd3: false,
+      wnd4: false,
     });
  
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
@@ -134,6 +135,7 @@ import {
           wnd1: false,
           wnd2: false,
           wnd3: false,
+          wnd4: false,
         });
         setIsAddClicked(false);
       })
@@ -250,6 +252,7 @@ import {
         wnd1: false,
         wnd2: false,
         wnd3: false,
+        wnd4: false,
       });
       setIsAddClicked(true);
     };
@@ -301,6 +304,7 @@ import {
                 <TableCell style={{ minWidth: 10 }}>(WND)1</TableCell>
                 <TableCell style={{ minWidth: 10 }}>(WND)2</TableCell>
                 <TableCell style={{ minWidth: 10 }}>(WND)3</TableCell>
+                <TableCell style={{ minWidth: 10 }}>(WND)4</TableCell>
                 <TableCell style={{ minWidth: 10 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -347,7 +351,7 @@ import {
                         />
                         
                       }
-                      label="(WND)1"
+                   
                     />
                     
                   </TableCell>
@@ -360,7 +364,7 @@ import {
                           // Implement onChange handler for wnd2
                         />
                       }
-                      label="(WND)2"
+                    
                     />
                   </TableCell>
                   <TableCell>
@@ -372,7 +376,19 @@ import {
                           // Implement onChange handler for wnd3
                         />
                       }
-                      label="(WND)3"
+                      
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={wound.wnd4}
+                          onChange={(e) => handleEditRowChange(index, 'wnd4', e.target.checked)}
+                          // Implement onChange handler for wnd3
+                        />
+                      }
+                      
                     />
                   </TableCell>
                   <TableCell>
@@ -461,6 +477,18 @@ import {
                         />
                       }
                       label="(WND)3"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={newRowData.wnd4}
+                          onChange={(e) => handleNewRowChange('wnd4', e.target.checked)}
+
+                        />
+                      }
+                      label="(WND)4"
                     />
                   </TableCell>
                   <TableCell>

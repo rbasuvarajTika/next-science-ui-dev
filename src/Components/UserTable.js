@@ -70,10 +70,10 @@ export default function UserTable(props) {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get('/api/v1/users/userList', config);
+        const response = await axios.get('/api/v1/users/usersList', config);
         setUsers(response.data.data.data);
         setLoading(false);
-        console.log(response.data.data.data);
+        console.log('Error fetching data',response.data.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
@@ -136,7 +136,7 @@ export default function UserTable(props) {
                       if (column.id === 'edit') {
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            <Link to={`/edit-user/${row.userId}`} state={{ user: row }}>
+                            <Link to={`/nsrxmgt/edit-user/${row.userId}`} state={{ user: row }}>
                               <button >Edit</button>
                             </Link>
                           </TableCell>

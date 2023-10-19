@@ -11,10 +11,13 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
 import { useParams, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function EditUser() {
   const { userId } = useParams(); // Get the user ID from route parameters
   const location = useLocation();
+  const navigate  = useNavigate();
   const selectedUser = location.state?.user || null;
   const [alignment, setAlignment] = React.useState('web');
   const [userData, setUserData] = React.useState(selectedUser || {
@@ -94,7 +97,8 @@ export default function EditUser() {
         // User was successfully updated
         // You can handle success here, e.g., show a success message
         alert('User Updated Successfully');
-        window.location.href = '/AdminPage';
+       
+        navigate("/nsrxmgt/adminPage");
       } else {
         // Handle errors, e.g., show an error message
       }

@@ -148,9 +148,9 @@ export function FaxTable() {
                   let linkTo = ''; // Define linkTo here
 
                   if (fax.faxStatus === 'Main' || fax.faxStatus === 'New') {
-                    linkTo = `/faxview/${fax.faxId}`;
+                    linkTo = `/nsrxmgt/faxview/${fax.faxId}`;
                   } else if (fax.faxStatus === 'Duplicate') {
-                    linkTo = `/duplicatefax/${fax.faxId}`;
+                    linkTo = `/nsrxmgt/duplicatefax/${fax.faxId}`;
                   }
 
                   return (

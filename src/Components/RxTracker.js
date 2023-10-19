@@ -142,7 +142,7 @@ const columns = [
   >
     {column.id === 'trnRxId' ? (
       // Wrap the Rx ID in a Link component with the corresponding URL
-      <Link to={`/casedetail/${row.trnRxId}`}>{row.trnRxId}</Link>
+      <Link to={`/nsrxmgt/casedetail/${row.trnRxId}`}>{row.trnRxId}</Link>
     ) : (
       // Render other columns as usual
       row[column.id]

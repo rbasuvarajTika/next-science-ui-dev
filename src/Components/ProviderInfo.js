@@ -40,11 +40,11 @@ const states = [
   'Alaska',
   'Arizona',
   'Arkansas',
-  'Ca',
+  'CA',
   'Colorado',
   'Connecticut',
   'Delaware',
-  'Florida',
+  'FL',
   'Georgia',
   'Hawaii',
   'Idaho',
@@ -73,7 +73,7 @@ const states = [
   'Ohio',
   'Ok',
   'Oregon',
-  'Pennsylvania',
+  'PA',
   'Rhode Island',
   'South Carolina',
   'South Dakota',
@@ -99,21 +99,23 @@ export default function ProviderInfo() {
     zip: '',
   });
   const [loading, setLoading] = useState(true);
-  const [editingRowId, setEditingRowId] = useState(null);
   const [editableOfficeData, setEditableOfficeData] = useState({ ...officeData });
-  const [selectedState, setSelectedState] = useState();
+  const [trnFaxId, setTrnFaxId] = useState([]);
+    const [states, setStates] = useState([]);
+    const [editingRowId, setEditingRowId] = useState(null);
+const [editingColumn, setEditingColumn] = useState(null);
+  const [newRows, setNewRows] = useState([]); // Array to store new rows
+
 const [isDropdownOpen, setDropdownOpen] = useState(false);
 
-  const [newRow, setNewRow] = useState({
-    hcp_first_Name: '',
-    hcp_last_Name: '',
-    npi: '',
-  });
   const { trnRxId } = useParams();
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+ const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  //const [isEditing, setIsEditing] = useState(false);
+  const [npiValue, setNpiValue] = useState('');
 
+  const [npiError, setNpiError] = useState('');
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -124,6 +126,9 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
           },
         };
         const response = await axios.get(`/api/v1/fax/hcpInfo/${trnRxId}`, config);
+        const trnFaxId = response.data.data[0].trnFaxId;
+        console.log("hcpInfotrnFaxId",trnFaxId );
+        setTrnFaxId(trnFaxId);
         setApiData(response.data.data);
        // console.log("Provider",response.data.data);
         setLoading(false);
@@ -138,11 +143,20 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
     fetchData();
   }, []);
 
-  const handleEditClick = (rowId) => {
-    setEditingRowId(rowId);
+  const handleEditRowClick = (index) => {
+    setEditingRowId(index);
+  };
+ 
+  const handleSaveRowClick = (rowId) => {
+    // Handle saving changes for an existing row
+    setEditingRowId(null);
+    // Send an API request to save the changes on the server if needed
+  };
+  const handleCancelRowClick = (rowId) => {
+    // Handle canceling changes for an existing row
+    setEditingRowId(null);
   };
 
- 
   const handleInputChange = (rowId, event, field) => {
     // Handle input changes for editing an existing row
     const updatedData = apiData.map((row) => {
@@ -152,27 +166,36 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
       return row;
     });
     setApiData(updatedData);
+  
+    // Handle input changes for new rows
+    const updatedNewRows = newRows.map((newRow) => {
+      if (newRow.id === rowId) {
+        return { ...newRow, [field]: event.target.value };
+      }
+      return newRow;
+    });
+    setNewRows(updatedNewRows);
   };
   const handleSaveClick = (rowId) => {
     // Handle saving changes for an existing row
     setEditingRowId(null);
     // Send an API request to save the changes on the server if needed
   };
-  const handleAddRowClick = () => {
-    // Create a new row with empty fields
-    const newId = apiData.length + 1;
-    const newRowWithId = { id: newId, ...newRow };
-    setApiData([...apiData, newRowWithId]);
-  };
-  const handleCancelClick = (rowId) => {
-    // Handle canceling changes for an existing row
-    if (rowId === apiData.length + 1) {
-      // Remove the newly added row when canceling
-      const updatedData = apiData.filter((row) => row.id !== rowId);
-      setApiData(updatedData);
-    }
-    setEditingRowId(null);
-  };
+  // const handleAddRowClick = () => {
+  //   // Create a new row with empty fields
+  //   const newId = apiData.length + 1;
+  //   const newRowWithId = { id: newId };
+  //   setApiData([...apiData, newRowWithId]);
+  // };
+  // const handleCancelClick = (rowId) => {
+  //   // Handle canceling changes for an existing row
+  //   if (rowId === apiData.length + 1) {
+  //     // Remove the newly added row when canceling
+  //     const updatedData = apiData.filter((row) => row.id !== rowId);
+  //     setApiData(updatedData);
+  //   }
+  //   setEditingRowId(null);
+  // };
   useEffect(() => {
     const fetchOfficeInfo = async () => {
       try {
@@ -204,6 +227,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
           officeName: firstOfficeData.accountName || '',
           cellPhone: firstOfficeData.phone || '',
           email: firstOfficeData.email || '',
+          address1: firstOfficeData.address1 || '',
           city: firstOfficeData.city || '',
           state: firstOfficeData.state || '',
           zip: firstOfficeData.zip || '',
@@ -238,6 +262,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
       accountName: editableOfficeData.officeName,
       phone: editableOfficeData.cellPhone,
       email: editableOfficeData.email,
+      address1:editableOfficeData.address1,
       city: editableOfficeData.city,
       state: editableOfficeData.state,
       zip: editableOfficeData.zip,
@@ -252,16 +277,98 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
         console.log('Data saved successfully:', response.data);
   
         // Exit edit mode
-        setIsEditing(false);
+        
       })
       .catch((error) => {
         // Handle any errors that occurred during the request
         console.error('Error saving data:', error);
       });
   };
+  useEffect(() => {
+    // Define a function to fetch the state data from the API
+    const fetchStateData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await axios.get('/api/v1/fax/stateDetails', config);
+        const stateData = response.data.data; // Assuming the API returns an array of states
+        setStates(stateData);
+      } catch (error) {
+        console.error('Error fetching state data:', error);
+      }
+    };
+
+    // Call the fetchStateData function when the component mounts
+    fetchStateData();
+  }, []); 
+  console.log("aftertrans" ,trnFaxId);
+  const handleSaveNewRow = async (newRow) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json', // Set the content type to JSON
+        },
+      };
   
+      // Format the newRow to match the desired format
+      const formattedRow = {
+        trnFaxId: trnFaxId,
+        provider_Type: 2,
+        signature_Flag: '', // You can set this as needed
+        signature_Date: ' ', // You can set this as needed
+        npi: newRow.npi,
+        firstName: newRow.hcp_first_Name,
+        middleName: newRow.hcp_middle_Name,
+        lastName: newRow.hcp_last_Name,
+        specialty1: "plastic",
+        address1: "cannonvalley street",
+        address2: "cannonvalley street",
+        city: newRow.city,
+        state: newRow.state,
+        zip: newRow.zip,
+        phone: newRow.phone,
+        fax: 150990,
+        email: newRow.email,
+        createUser: newRow.createUser,
+      };
+   
+      // Prepare the request body by converting formattedRow to JSON
+      const requestBody = JSON.stringify(formattedRow);
+  
+      // Make the POST request to the API endpoint
+      const response = await axios.post('/api/v1/fax/hcpInfo', requestBody, config);
+  
+      if (response.status === 200) {
+        // Request was successful, you can handle the response here if needed
+        console.log('Row saved successfully');
+       
+        // Update your local data after a successful response
+        const updatedData = [...apiData, newRow];
+        setApiData(updatedData);
+  
+        // Remove the saved new row from newRows
+        const updatedNewRows = newRows.filter((row) => row.id !== newRow.id);
+        setNewRows(updatedNewRows);
+      } else {
+        // Handle errors if the request was not successful
+        console.error('Failed to save the row:', response.data);
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  };
+  
+  
+
   const handleDeleteButtonClick = (rowId) => {
-    setRowToDelete(rowId);
+    
     setDeleteConfirmationOpen(true);
   };
 
@@ -269,9 +376,10 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
     setRowToDelete(null);
     setDeleteConfirmationOpen(false);
   };
+ 
 
   const confirmDelete = () => {
-    setDeleteConfirmationOpen(false);
+   // setDeleteConfirmationOpen(false);
     const updatedData = apiData.filter((row) => row.id !== rowToDelete);
     setApiData(updatedData);
     setRowToDelete(null);
@@ -298,6 +406,12 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
       email: event.target.value,
     });
   };
+  const handleOfficeAddressChange = (event) => {
+    setEditableOfficeData({
+      ...editableOfficeData,
+      address1: event.target.value,
+    });
+  };
 
   const handleCityChange = (event) => {
     setEditableOfficeData({
@@ -306,11 +420,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
     });
   };
 
-  const handleStateChange = (event) => {
-    editableOfficeData.state = event.target.value;
-    console.log("After Rendering",editableOfficeData.state);
-    setSelectedState(event.target.value);
-  };
+
   const handleZipChange = (event) => {
     setEditableOfficeData({
       ...editableOfficeData,
@@ -318,14 +428,43 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
     });
   };
   console.log("editableOfficeDatawwww", editableOfficeData);
+  
+  const handleStateChange = (event) => {
+    setEditableOfficeData({
+      ...editableOfficeData,
+      state: event.target.value,
+    });
+  };
+  const handleAddEmptyRow = () => {
+    // Create a new row with empty fields
+    const newId = apiData.length + newRows.length + 1;
+    const newRowWithId = { id: newId, hcp_first_Name: '', hcp_middle_Name: '', hcp_last_Name: '', npi: '' };
+    setNewRows([...newRows, newRowWithId]);
+  };
+
+  // const handleSaveNewRow = (newRow) => {
+  //   // Save the new row by appending it to the API data
+  //   const updatedData = [...apiData, newRow];
+  //   setApiData(updatedData);
+
+  //   // Remove the saved new row from newRows
+  //   const updatedNewRows = newRows.filter((row) => row.id !== newRow.id);
+  //   setNewRows(updatedNewRows);
+  // };
+
+  const handleCancelNewRow = (newRowId) => {
+    // Remove the canceled new row from newRows
+    const updatedNewRows = newRows.filter((row) => row.id !== newRowId);
+    setNewRows(updatedNewRows);
+  };
+  const handleEditColumnClick = (rowId, columnName) => {
+    setEditingRowId(rowId);
+    setEditingColumn(columnName);
+  };
+  
   return (
     <>
-     <Button
-        style={{ float: 'right', marginTop: '1rem', marginRight: '1rem' }}
-        variant="contained"
-        color="primary"
-        onClick={handleAddRowClick}
-      >
+  <Button variant="contained" color="primary" onClick={handleAddEmptyRow}  style={{ float: 'right', marginTop: '1rem', marginRight: '1rem' }}>
         Add 
       </Button>
       <TableContainer component={Paper}>
@@ -333,7 +472,9 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
           <TableHead>
             <TableRow>
               <TableCell>Signed</TableCell>
-              <TableCell>Provider Name</TableCell>
+              <TableCell>First Name</TableCell>
+              <TableCell>Middle Name</TableCell>
+              <TableCell>Last Name</TableCell>
               <TableCell>NPI</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -346,28 +487,41 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
                 </TableCell>
                 <TableCell>
                   {editingRowId === row.id ? (
-                    <Grid container spacing={1} alignItems="center">
-                      <Grid item xs={6}>
-                        <TextField
-                          fullWidth
-                          name="firstName"
-                          label="First Name"
-                          value={row.hcp_first_Name}
-                          onChange={(e) => handleInputChange(row.id, e, 'hcp_first_Name')}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TextField
-                          fullWidth
-                          name="lastName"
-                          label="Last Name"
-                          value={row.hcp_last_Name}
-                          onChange={(e) => handleInputChange(row.id, e, 'hcp_last_Name')}
-                        />
-                      </Grid>
-                    </Grid>
+                    <TextField
+                      fullWidth
+                      name="firstName"
+                      label="First Name"
+                      value={row.hcp_first_Name}
+                      onChange={(e) => handleInputChange(row.id, e, 'hcp_first_Name')}
+                    />
                   ) : (
-                    `${row.hcp_first_Name} ${row.hcp_last_Name}`
+                    row.hcp_first_Name
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingRowId === row.id ? (
+                    <TextField
+                      fullWidth
+                      name="middlename"
+                      label="Middle Name"
+                      value={row.hcp_middle_Name}
+                      onChange={(e) => handleInputChange(row.id, e, 'hcp_middle_Name')}
+                    />
+                  ) : (
+                    row.hcp_middle_Name
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingRowId === row.id ? (
+                    <TextField
+                      fullWidth
+                      name="lastName"
+                      label="Last Name"
+                      value={row.hcp_last_Name}
+                      onChange={(e) => handleInputChange(row.id, e, 'hcp_last_Name')}
+                    />
+                  ) : (
+                    row.hcp_last_Name
                   )}
                 </TableCell>
                 <TableCell>
@@ -386,19 +540,33 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
                 <TableCell>
                   {editingRowId === row.id ? (
                     <>
-                      <Button onClick={() => handleSaveClick(row.id)} variant="outlined">
+                      <Button
+                        onClick={() => handleSaveRowClick(row.id)}
+                        variant="outlined"
+                      >
                         Save
                       </Button>
-                      <Button onClick={() => handleDeleteButtonClick(row.id)} variant="outlined" color="secondary">
+                      <Button
+                        onClick={() => handleDeleteButtonClick(row.id)}
+                        variant="outlined"
+                        color="secondary"
+                      >
                         Delete
                       </Button>
                     </>
                   ) : (
                     <>
-                      <Button onClick={() => handleEditClick(row.id)} variant="outlined">
+                      <Button
+                        onClick={() => handleEditRowClick(row.id)}
+                        variant="outlined"
+                      >
                         Edit
                       </Button>
-                      <Button onClick={() => handleDeleteButtonClick(row.id)} variant="outlined" color="secondary">
+                      <Button
+                        onClick={() => handleDeleteButtonClick(row.id)}
+                        variant="outlined"
+                        color="secondary"
+                      >
                         Delete
                       </Button>
                     </>
@@ -409,7 +577,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
           </TableBody>
         </Table>
       </TableContainer>
-
+        
       <Dialog
         open={deleteConfirmationOpen}
         onClose={cancelDelete}
@@ -465,6 +633,16 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                label="Address"
+                name="address1"
+                type="address1"
+                value={editableOfficeData.address1}
+                onChange={handleOfficeAddressChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
                 label="City"
                 name="city"
                 value={editableOfficeData.city}
@@ -473,21 +651,21 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
             </Grid>
             
             <Grid item xs={12} sm={6}>
-            <Select
-  name="state"
-  value={editableOfficeData.state}
-  onChange={handleStateChange}
-  onOpen={() => setDropdownOpen(true)}
-  onClose={() => setDropdownOpen(false)}
-  open={isDropdownOpen}
->
-  {states.map((state) => (
-    <MenuItem key={state} value={state}>
-      {state}
+      <Select
+        name="state"
+        value={editableOfficeData.state}
+        onChange={handleStateChange}
+        onOpen={() => setDropdownOpen(true)}
+        onClose={() => setDropdownOpen(false)}
+        open={isDropdownOpen}
+      >
+         {states.map((state) => (
+    <MenuItem key={state.stateName} value={state.shortName}>
+    {state.stateName}
     </MenuItem>
-  ))}
-</Select>
-</Grid>
+        ))}
+      </Select>
+    </Grid>
               
        
             <Grid item xs={12} sm={6}>

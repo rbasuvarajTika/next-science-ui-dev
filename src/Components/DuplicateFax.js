@@ -10,10 +10,11 @@ import { useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
 
 export function DuplicateFax({ onReset }) {
   const { faxId, duplicateFaxId } = useParams(); // Get the fax IDs from route parameters
-
+ const navigate = useNavigate();
   // Set the PDF worker source
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -201,7 +202,8 @@ export function DuplicateFax({ onReset }) {
           // If the user clicks "OK" in the alert box, redirect to the fax page
           if (confirmation) {
             // Replace 'fax-page-url' with the actual URL of your fax page
-            window.location.href = '/fax';
+           
+            navigate("/nsrxmgt/fax");
           }
        
           // You may want to update the state or perform other actions on success.
@@ -236,7 +238,7 @@ export function DuplicateFax({ onReset }) {
             alert('Fax has been kept as a duplicate.');
 
             // Redirect to the fax page
-            window.location.href = '/fax'; 
+            navigate("/nsrxmgt/fax");
         })
         .catch((error) => {
           // Handle error

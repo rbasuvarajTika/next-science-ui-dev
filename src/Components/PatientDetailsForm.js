@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios for making HTTP requests
 import { useParams } from 'react-router-dom';
-
+import BasicDatePicker from './BasicDatePicker';
 import { usePatientData } from './PatientDataContext';
 import { Link } from 'react-router-dom';
 import {
@@ -17,11 +17,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    
     Paper,
     Select, // Import Select component
   MenuItem,
   InputLabel
   } from '@mui/material';
+
 import { ReadyForReview } from './ReadyForReview';
 import WoundInfoTable from './WoundInfoTable';
 import ProviderInfo from './ProviderInfo';
@@ -31,60 +33,11 @@ import ProviderInfo from './ProviderInfo';
     { id: 3, name: 'Provider 3', npi: '4567890123' },
     { id: 4, name: 'Provider 4', npi: '7890123456' },
   ];
-  const states = [
-    'Alabama',
-    'Alaska',
-    'Arizona',
-    'Arkansas',
-    'California',
-    'Colorado',
-    'Connecticut',
-    'Delaware',
-    'Florida',
-    'Georgia',
-    'Hawaii',
-    'Idaho',
-    'Illinois',
-    'Indiana',
-    'Iowa',
-    'Kansas',
-    'Kentucky',
-    'Louisiana',
-    'Maine',
-    'Maryland',
-    'Massachusetts',
-    'Michigan',
-    'Minnesota',
-    'Mississippi',
-    'Missouri',
-    'Montana',
-    'Nebraska',
-    'Nevada',
-    'New Hampshire',
-    'New Jersey',
-    'New Mexico',
-    'New York',
-    'North Carolina',
-    'North Dakota',
-    'Ohio',
-    'Ok',
-    'Oregon',
-    'Pennsylvania',
-    'Rhode Island',
-    'SC',
-    'South Dakota',
-    'TN',
-    'Texas',
-    'Utah',
-    'Vermont',
-    'Virginia',
-    'Washington',
-    'West Virginia',
-    'Wisconsin',
-    'Wyoming',
-  ];
 function PatientDetailsForm() {
-  const [patientName, setPatientName] = useState('');
+  const [patientFirstName, setPatientFirstName] = useState('');
+  const [patientMiddleName, setPatientMiddleName] = useState('');
+  const [patientLastName, setPatientLastName] = useState('');
+
   const [cellPhone, setCellPhone] = useState('');
   const [shipToAddress, setShipToAddress] = useState('');
   const [ssn, setSsn] = useState('');
@@ -104,11 +57,18 @@ function PatientDetailsForm() {
    const [faxId, setFaxId] = useState('');
    const [selectedState, setSelectedState] = useState();
    const [isDropdownOpen, setDropdownOpen] = useState(false);
+   const [isDropdownOpenState, setDropdownOpenState] = useState(false);
 
-  
+   const [cellPhoneError, setCellPhoneError] = useState('');
+   const [zipError, setZipError] = useState('');
+   const [ssnError, setSsnError] = useState('');
+   const [states, setStates] = useState([]);
+   const [distributorData, setDistributorData] = useState([]);
+
    const [patientData, setPatientData] = useState({
     state: '', // Initialize patientData with an object containing 'state' property
-  });  const [isReadyForReview, setIsReadyForReview] = useState(false); // Track button click
+  });  
+  const [isReadyForReview, setIsReadyForReview] = useState(false); // Track button click
   
   const { setPatient } = usePatientData();
 
@@ -130,14 +90,16 @@ function PatientDetailsForm() {
         const responseData = response.data;
         console.log(responseData);
         console.log('isReadyForReview:', isReadyForReview);
-        console.log('patientNamebefore:', patientName);
+       
 
         if (responseData && responseData.data && responseData.data.length > 0) {
           const patientData = responseData.data[0]
           console.log('Fetched patient data:', patientData);;
-          setPatientName(patientData.patientName);
-          console.log("new",patientName);
-          console.log(patientData.patientName);
+          setPatientFirstName(patientData.patientFirstName);
+          setPatientMiddleName(patientData.patientMiddleName);
+          setPatientLastName(patientData.patientLastName);
+         // console.log("new",patientName);
+         // console.log(patientData.patientName);
           setCellPhone(patientData.cellPhone);
           setShipToAddress(patientData.shipToAddress);
           setSsn(patientData.ssn)
@@ -152,7 +114,7 @@ function PatientDetailsForm() {
           setSalesRepName(patientData.repName);
           setSalesRepCell(patientData.repPhoneNo);
           setPlaceOfService(patientData.placeOfService);
-          setDistributor(patientData.distributorId);
+          setDistributor(patientData.distributorName);
           setOrderInformation(patientData.orderType);
           setActiveWound(patientData.woundActive)
           setPatientId(patientData.patientId);
@@ -175,6 +137,30 @@ function PatientDetailsForm() {
   
     fetchData();
   }, [trnRxId]);
+
+  useEffect(() => {
+    // Define a function to fetch the state data from the API
+    const fetchStateData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+  
+        const response = await axios.get('/api/v1/fax/stateDetails', config);
+        const stateData = response.data.data; // Assuming the API returns an array of states
+        setStates(stateData);
+      } catch (error) {
+        console.error('Error fetching state data:', error);
+      }
+    };
+  
+    // Call the fetchStateData function when the component mounts
+    fetchStateData();
+  }, []);
+  
   const handleSave = async () => {
     // Get the token from localStorage
     const token = localStorage.getItem('token');
@@ -184,7 +170,9 @@ function PatientDetailsForm() {
      patientId: patientId,
      trnFaxId:trnFaxId,
      faxId:faxId,
-      patientFullName: patientName,
+     patientFirstName: patientFirstName,
+      patientMiddleName:patientMiddleName,
+      patientLastName:patientLastName,
       cellPhone: cellPhone,
       shipToAddress: shipToAddress,
       ssn: ssn,
@@ -195,7 +183,7 @@ function PatientDetailsForm() {
       repName: salesRepName,
       repPhoneNo:salesRepCell,
       placeOfService: placeOfService,
-      distributorId: distributor,
+      distributorName: distributor,
       orderType: orderInformation,
       woundActive:woundActive,
     };
@@ -220,8 +208,71 @@ function PatientDetailsForm() {
       console.error('Error saving data:', error);
     }
   };
+  useEffect(() => {
+    // Define a function to fetch distributor data from the API
+    const fetchDistributorData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await axios.get('/api/v1/fax/distributorDetails', config);
+        const distributorData = response.data.data; // Adjust based on API response structure
+
+        setDistributorData(distributorData);
+      } catch (error) {
+        console.error('Error fetching distributor data:', error);
+      }
+    };
+
+    // Call the fetchDistributorData function when the component mounts
+    fetchDistributorData();
+  }, []);
   const handleStateChange = (event) => {
     setPatientData({ ...patientData, state: event.target.value });
+  };
+  const handleCellPhoneChange = (e) => {
+    const numericValue = e.target.value.replace(/\D/g, '');
+    const truncatedValue = numericValue.slice(0, 10);
+
+    // Update the state and error message
+    setCellPhone(truncatedValue);
+
+    if (truncatedValue.length !== 10) {
+      setCellPhoneError('Please enter only 10 digits .');
+    } else {
+      setCellPhoneError('');
+    }
+  };
+  const handleZipChange = (e) => {
+    const numericValue = e.target.value.replace(/\D/g, '');
+    const truncatedValue = numericValue.slice(0, 5);
+
+    // Update the state and error message
+    setZip(truncatedValue);
+
+    if (truncatedValue.length !== 5) {
+      setZipError('Please enter only 5 digits .');
+    } else {
+      setZipError('');
+    }
+  };
+
+  const handleSsnChange = (e) => {
+    const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+    const truncatedValue = numericValue.slice(0, 4);
+
+    // Update the state and error message
+    setSsn(truncatedValue);
+
+    if (truncatedValue.length !== 4) {
+      setSsnError('Please enter a valid 4-digit SSN.');
+    } else {
+      setSsnError('');
+    }
   };
   return (
     <>
@@ -241,29 +292,67 @@ function PatientDetailsForm() {
       <Typography variant="h6" gutterBottom style={{ textAlign: 'center', left: '1rem' }}>
         Patient Details
       </Typography>
+      <h4>NetSuite Patient ID :</h4>
+      <div style={{ textAlign: 'right', marginTop: '-48px' }}>
+
+   <h4>Tike ID :</h4>
+</div>
       <form>
        
         <Grid container spacing={1}>
-          <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={4}>
          
-            <TextField
-              label={"Patient Name"}
-              fullWidth
-              id="patientName"
-                    size="small"
-              value={patientName}
-              
-              onChange={(e) => setPatientName(e.target.value)}
-            />
-          </Grid>
+         <TextField
+           label={"First Name"}
+           fullWidth
+           id="patientFirstName"
+                 size="small"
+         value={patientFirstName}
+           
+           onChange={(e) => setPatientFirstName(e.target.value)}
+         />
+       </Grid>
+       <Grid item xs={12} sm={4}>
+         
+         <TextField
+           label="Middle Name"
+           fullWidth
+           id="patientMiddleName"
+                 size="small"
+        value={patientMiddleName}
+           
+           onChange={(e) => setPatientMiddleName(e.target.value)}
+         />
+       </Grid>
+       <Grid item xs={12} sm={4}>
+         
+         <TextField
+           label="Last Name"
+           fullWidth
+           id="patientName"
+                 size="small"
+        value={patientLastName}
+           
+           onChange={(e) => setPatientLastName(e.target.value)}
+         />
+       </Grid>
+         
+         
           <Grid item xs={12} sm={5}>
-            <TextField
-              label={"Cell Phone"}
-              fullWidth
-              size="small"
-              value={cellPhone}
-              onChange={(e) => setCellPhone(e.target.value)}
-            />
+          <TextField
+      label="Cell Phone"
+      fullWidth
+      size="small"
+      value={cellPhone}
+      onChange={handleCellPhoneChange}
+      error={!!cellPhoneError}
+      helperText={cellPhoneError}
+      InputProps={{
+        inputProps: {
+          inputMode: 'numeric',
+        },
+      }}
+    />
           </Grid>
           <Grid item xs={12} sm={5}>
             <TextField
@@ -274,13 +363,16 @@ function PatientDetailsForm() {
               onChange={(e) => setShipToAddress(e.target.value)}
             />
           </Grid>
+          
           <Grid item xs={12} sm={4}>
             <TextField
               label="Last 4 of SSN"
               fullWidth
               size="small"
              value={ssn}
-              onChange={(e) => setSsn(e.target.value)}
+              onChange={handleSsnChange }
+              error={!!ssnError}
+              helperText={ssnError}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -302,8 +394,8 @@ function PatientDetailsForm() {
   open={isDropdownOpen}
 >
   {states.map((state) => (
-    <MenuItem key={state} value={state}>
-      {state}
+    <MenuItem key={state.stateName} value={state.shortName}>
+    {state.stateName}
     </MenuItem>
   ))}
 </Select>
@@ -311,23 +403,31 @@ function PatientDetailsForm() {
       
           </Grid>
 <Grid item xs={12} sm={2}>
-  <TextField
-    label="ZIP"
-    fullWidth
-    size="small"
-    value={zip}
-    onChange={(e) => setZip(e.target.value)}
-  />
+<TextField
+      label="ZIP"
+      fullWidth
+      size="small"
+      value={zip}
+      onChange={handleZipChange}
+      error={!!zipError}
+      helperText={zipError}
+      InputProps={{
+        inputProps: {
+          inputMode: 'numeric',
+        },
+      }}
+    />
 </Grid>
 <Grid item xs={12} sm={4}>
   <TextField
-   label="DOB"
+   label="DOB mm/dd/yyyy"
     fullWidth
     size="small"
     value={dateOfBirth}
     onChange={(e) => setDateOfBirth(e.target.value)}
   />
 </Grid>
+
           <Grid item xs={12} sm={3}>
             <TextField
               label="Sales Rep Name"
@@ -363,19 +463,23 @@ function PatientDetailsForm() {
       </Grid>
          
       <Grid item xs={12} sm={6}>
-      <InputLabel htmlFor="order-information">Distributor </InputLabel>
-
-        <Select
-          fullWidth
-          size="small"
-          value={distributor}
-          onChange={(e) => setDistributor(e.target.value)}
-        >
-          <MenuItem value={distributor}>{distributor}</MenuItem>
-           <MenuItem value="Yes">Yes</MenuItem>
-              <MenuItem value="No">No</MenuItem>
-              </Select>
-      </Grid>
+      <InputLabel htmlFor="order-information">Distributor</InputLabel>
+      <Select
+        fullWidth
+        size="small"
+        value={distributor}
+        onChange={(e) => setDistributor(e.target.value)}
+        onOpen={() => setDropdownOpenState(true)}
+        onClose={() => setDropdownOpenState(false)}
+        open={isDropdownOpenState}
+      >
+        {distributorData.map((item) => (
+          <MenuItem key={item.distributorId} value={item.distributorName}>
+            {item.distributorName} {/* Adjust based on the structure of distributor data */}
+          </MenuItem>
+        ))}
+      </Select>
+    </Grid>
 
       {/* Order Information */}
       <Grid item xs={12} sm={6}>
@@ -421,46 +525,13 @@ function PatientDetailsForm() {
 <div style={{maxWidth:"50%"}}> 
     <WoundInfoTable trnRxId ={trnRxId} trnFaxId ={trnFaxId}/>
     </div>
-{/* <TableContainer component={Paper} sx={{
-          width: '100%',
-          maxWidth: '60px',
-          maxHeight:'360px',
-          margin: '1rem',
-          minWidth: '400px', // Minimum width added here
-        }}>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Provider Name</TableCell>
-          <TableCell>NPI</TableCell>
-          <TableCell>Select</TableCell>
-           
-        </TableRow>
-      </TableHead>
-      <TableBody>
-  {data.map((row) => (
-    <TableRow key={row.id}>
-      <TableCell>
-        <Radio
-          // You can handle radio button selection here
-          // For example, using state to track selected rows
-          // onChange={(e) => handleRadioChange(e, row.id)}
-        />
-      </TableCell>
-      <TableCell>{row.name}</TableCell>
-      <TableCell>{row.npi}</TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-    </Table>
-  </TableContainer> */}
   <div style={{maxWidth:"50%"}}> 
 
-  <ProviderInfo trnRxId={trnRxId}/>
+  <ProviderInfo trnRxId={trnRxId} trnFaxId={trnFaxId}/>
 </div>
             <Grid container spacing={2} justifyContent="flex-end" style={{ marginTop: '1rem' }}>
                 <Grid item>
-                <Link className='link' to='/review'>
+                <Link className='link' to='/nsrxmgt/review'>
                 <Button
               variant="outlined"
               style={{ right: '45rem', bottom: '1rem' }}

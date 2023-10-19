@@ -10,10 +10,12 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateNewUser() {
+  const navigate = useNavigate();
   const [alignment, setAlignment] = React.useState('web');
+
   const [userData, setUserData] = React.useState({
     userName: '',
     firstName: '',
@@ -47,7 +49,8 @@ export default function CreateNewUser() {
 
       if (response.status === 201 || response.status === 200) {
         alert('User Created Successfully');
-        window.location.href = '/AdminPage';
+        navigate("/nsrxmgt/adminpage");
+       
         // User was successfully created (assuming you return a 201 status code)
         // You can handle success here, e.g., show a success message
       } else {
