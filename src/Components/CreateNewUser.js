@@ -45,15 +45,17 @@ export default function CreateNewUser() {
         },
       };
       console.log(config);
+      userData.email=userData.userName;
       const response = await axios.post('/api/v1/users/create/user', userData, config);
-
       if (response.status === 201 || response.status === 200) {
         alert('User Created Successfully');
         navigate("/nsrxmgt/adminpage");
        
         // User was successfully created (assuming you return a 201 status code)
         // You can handle success here, e.g., show a success message
-      } else {
+      } else if (response.status == 409) {
+        alert('User Already Exists');
+      }else {
         // Handle errors, e.g., show an error message
       }
     } catch (error) {
@@ -168,7 +170,7 @@ export default function CreateNewUser() {
               <p className='fieldLabel'>Secondary Email:</p>
               <TextField
                 margin="normal"
-                name="email"
+                name="secondaryEmail"
                 value={userData.email}
                 onChange={handleInputChange}
                 type="text"
