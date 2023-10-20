@@ -3,6 +3,7 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import axiosBaseURL from './axios.js';
 
 export default function ConfirmEmail({ onNext }) {
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ export default function ConfirmEmail({ onNext }) {
 
     try {
       // Send a POST request to your API with the email data
-      await axios.post('/api/v1/notification/emails/forgotpassword', {
+      await axiosBaseURL.post('/api/v1/notification/emails/forgotpassword', {
         email: email,
         resetLink:'http://localhost:3000/resetpassword'
       });

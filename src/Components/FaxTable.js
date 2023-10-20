@@ -14,6 +14,7 @@ import PagingTabs from './PagingTabs';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete'; // Import Autocomplete
 import { Link } from 'react-router-dom';
+import axiosBaseURL from './axios.js';
 
 const columns = [
   { id: 'faxId', label: 'Fax ID', minWidth: 150 },
@@ -42,7 +43,7 @@ export function FaxTable() {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get('/api/v1/fax/faxList', config);
+        const response = await axiosBaseURL.get('/api/v1/fax/faxList', config);
         setFaxes(response.data.data.data); // Update state with the fetched data
         console.log(response.data);
       } catch (error) {

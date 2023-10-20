@@ -9,6 +9,7 @@ import PagingTabs from './PagingTabs';
 import { useParams, useLocation } from 'react-router-dom';
 import FaxDetails from './FaxDetails';
 import PatientDetailsForm from './PatientDetailsForm';
+import axiosBaseURL from './axios.js';
 
 export function CaseDetail({ onReset }) {
   const { faxId } = useParams();
@@ -33,7 +34,7 @@ export function CaseDetail({ onReset }) {
     const token = localStorage.getItem('token');
 
     if (token) {
-      axios({
+      axiosBaseURL({
         method: 'GET',
         url: `/api/v1/fax/getFaxPdf/1509414999`,
         responseType: 'arraybuffer',

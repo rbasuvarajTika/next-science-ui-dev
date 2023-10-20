@@ -10,6 +10,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
 import axios from 'axios';
+import axiosBaseURL from './axios.js';
 import { useNavigate } from 'react-router-dom';
 
 export default function CreateNewUser() {
@@ -46,7 +47,7 @@ export default function CreateNewUser() {
       };
       console.log(config);
       userData.email=userData.userName;
-      const response = await axios.post('/api/v1/users/create/user', userData, config);
+      const response = await axiosBaseURL.post('/api/v1/users/create/user', userData, config);
       if (response.status === 201 || response.status === 200) {
         alert('User Created Successfully');
         navigate("/nsrxmgt/adminpage");

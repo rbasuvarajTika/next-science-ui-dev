@@ -12,6 +12,7 @@ import { Button } from '@mui/material';
 import PagingTabs from './PagingTabs';
 import  { useEffect, useState } from 'react';
 import axios from 'axios';
+import axiosBaseURL from './axios.js';
 import { Link } from 'react-router-dom'; // Import Link from React Router
 
 
@@ -70,7 +71,7 @@ const columns = [
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get('/api/v1/fax/rxTrackerList', config);
+        const response = await axiosBaseURL.get('/api/v1/fax/rxTrackerList', config);
         setData(response.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);

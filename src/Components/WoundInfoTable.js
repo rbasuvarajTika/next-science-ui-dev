@@ -20,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import KitNumberInfo from './KitNumberInfo';
 import { useParams } from 'react-router-dom';
-
+import axiosBaseURL from './axios.js';
 
 export default function WoundInfoTable() {
   const [woundData, setWoundData] = useState([]);
@@ -59,7 +59,7 @@ export default function WoundInfoTable() {
         };
 
         // Make a GET request to the API to fetch wound data
-        const response = await axios.get(`/api/v1/fax/woundInfo/${trnRxId}`, config);
+        const response = await axiosBaseURL.get(`/api/v1/fax/woundInfo/${trnRxId}`, config);
         const responseData = response.data;
         const trnFaxId = responseData.data[0].trnFaxId;
         const woundNo = responseData.data[0].woundNo;
@@ -95,7 +95,7 @@ export default function WoundInfoTable() {
       };
   
       // Make a POST request to the API to save the new row data
-      const response = await axios.post(`/api/v1/fax/woundInfo`, newRowData, config);
+      const response = await axiosBaseURL.post(`/api/v1/fax/woundInfo`, newRowData, config);
   
       if (response.status === 200) {
         // The data was successfully saved. You can handle the success here.
@@ -138,7 +138,7 @@ export default function WoundInfoTable() {
       const updatedWoundData = woundData[index];
   
       // Make a PUT request to update the edited wound data
-      const response = await axios.put(`/api/v1/fax/woundInfo`, updatedWoundData, config);
+      const response = await axiosBaseURL.put(`/api/v1/fax/woundInfo`, updatedWoundData, config);
       //const woundNo = response.data.data.woundNo
     
       if (response.status === 200) {
@@ -222,7 +222,7 @@ export default function WoundInfoTable() {
         // Make a DELETE request to delete the selected wound using its ID
         const woundIdToDelete = woundData[selectedRowToDelete].woundId; // Adjust this according to your data structure
   
-        const response = await axios.delete(`/api/v1/fax/woundInfoDetails`, {
+        const response = await axiosBaseURL.delete(`/api/v1/fax/woundInfoDetails`, {
           ...config,
           data: dataToDelete,
         });

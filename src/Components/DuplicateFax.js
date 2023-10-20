@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
+import axiosBaseURL from './axios.js';
 
 export function DuplicateFax({ onReset }) {
   const { faxId, duplicateFaxId } = useParams(); // Get the fax IDs from route parameters
@@ -53,7 +54,7 @@ export function DuplicateFax({ onReset }) {
     const token = localStorage.getItem('token');
 
     if (token) {
-      axios({
+      axiosBaseURL({
         method: 'GET',
         url: `/api/v1/fax/faxDupeById/${faxId}`, // Use the endpoint that provides both IDs
         headers: {
@@ -72,7 +73,7 @@ export function DuplicateFax({ onReset }) {
           setSelectedFaxId(duplicateFaxId); // Set the selected fax ID
 
           // Fetch main fax PDF
-          axios({
+          axiosBaseURL({
             method: 'GET',
             url: `/api/v1/fax/getFaxPdf/${mainFaxId}`,
             responseType: 'arraybuffer',
@@ -92,7 +93,7 @@ export function DuplicateFax({ onReset }) {
             });
 
           // Fetch duplicate fax PDF
-          axios({
+          axiosBaseURL({
             method: 'GET',
             url: `/api/v1/fax/getFaxPdf/${duplicateFaxId}`,
             responseType: 'arraybuffer',
@@ -188,7 +189,7 @@ export function DuplicateFax({ onReset }) {
   const handleMakeMaster = () => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios
+      axiosBaseURL
         .put(`/api/v1/fax/updateFax/${duplicateTrnFaxId}/${mainTrnFaxId}`, null, {
           headers: {
             Authorization: `Bearer ${token}`,

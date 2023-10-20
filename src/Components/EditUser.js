@@ -12,7 +12,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PagingTabs from './PagingTabs';
 import { useParams, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
+import axiosBaseURL from './axios.js';
 
 export default function EditUser() {
   const { userId } = useParams(); // Get the user ID from route parameters
@@ -52,7 +52,7 @@ export default function EditUser() {
 
         if (!selectedUser && userId) {
           // Fetch user data only when userId is available and selectedUser is not set
-          const response = await axios.get(`/api/v1/users/user/${userId}`, config);
+          const response = await axiosBaseURL.get(`/api/v1/users/user/${userId}`, config);
           if (response.status === 200) {
             alert('User Created Successfully');
             userDataToSet = response.data.data.data; // Assuming the response contains user data
@@ -87,7 +87,7 @@ export default function EditUser() {
         },
       };
 
-      const response = await axios.put(
+      const response = await axiosBaseURL.put(
         `/api/v1/users/update/user/${userId}`,
         userData,
         config

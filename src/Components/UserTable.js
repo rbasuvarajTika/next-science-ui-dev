@@ -9,6 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Link } from 'react-router-dom';
+import axiosBaseURL from './axios.js';
 
 const columns = [
   { id: 'username', label: 'User Id', minWidth: 170 },
@@ -70,7 +71,7 @@ export default function UserTable(props) {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get('/api/v1/users/usersList', config);
+        const response = await axiosBaseURL.get('/api/v1/users/usersList', config);
         setUsers(response.data.data.data);
         setLoading(false);
         console.log('Error fetching data',response.data.data.data);

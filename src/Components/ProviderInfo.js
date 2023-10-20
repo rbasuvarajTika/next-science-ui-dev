@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import axiosBaseURL from './axios.js';
 
 import {
   TableContainer,
@@ -125,7 +126,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get(`/api/v1/fax/hcpInfo/${trnRxId}`, config);
+        const response = await axiosBaseURL.get(`/api/v1/fax/hcpInfo/${trnRxId}`, config);
         const trnFaxId = response.data.data[0].trnFaxId;
         console.log("hcpInfotrnFaxId",trnFaxId );
         setTrnFaxId(trnFaxId);
@@ -206,7 +207,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
           },
         };
   
-        const response = await axios.get(`/api/v1/fax/officeInfo/${trnRxId}`, config);
+        const response = await axiosBaseURL.get(`/api/v1/fax/officeInfo/${trnRxId}`, config);
         console.log("API Response", response.data.data);
 
   
@@ -270,7 +271,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
     };
   
     // Send a PUT request to update the office data
-    axios
+    axiosBaseURL
       .put(`/api/v1/fax/officeInfo`, requestData, config)
       .then((response) => {
         // Handle the response from the API if needed
@@ -295,7 +296,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
           },
         };
 
-        const response = await axios.get('/api/v1/fax/stateDetails', config);
+        const response = await axiosBaseURL.get('/api/v1/fax/stateDetails', config);
         const stateData = response.data.data; // Assuming the API returns an array of states
         setStates(stateData);
       } catch (error) {
@@ -343,7 +344,7 @@ const [isDropdownOpen, setDropdownOpen] = useState(false);
       const requestBody = JSON.stringify(formattedRow);
   
       // Make the POST request to the API endpoint
-      const response = await axios.post('/api/v1/fax/hcpInfo', requestBody, config);
+      const response = await axiosBaseURL.post('/api/v1/fax/hcpInfo', requestBody, config);
   
       if (response.status === 200) {
         // Request was successful, you can handle the response here if needed

@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import axiosBaseURL from './axios.js';
 
 export default function ResetPassword({ onReset }) {
   const { userId } = useParams(); // Get the user ID from route parameters
@@ -25,7 +26,7 @@ export default function ResetPassword({ onReset }) {
     if (newPassword === confirmPassword) {
       try {
         // Send a PUT request to update the password in the database
-        const response = await axios.put(
+        const response = await axiosBaseURL.put(
           `/api/v1/users/update/user/password/${userId}`,
           { newPassword: newPassword }
         );

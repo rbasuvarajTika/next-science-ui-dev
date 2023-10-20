@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import BasicDatePicker from './BasicDatePicker';
 import { usePatientData } from './PatientDataContext';
 import { Link } from 'react-router-dom';
+import axiosBaseURL from './axios.js';
 import {
     Container,
     Typography,
@@ -85,7 +86,7 @@ function PatientDetailsForm() {
         };
   
         // Make a GET request to the API using the trnRxId parameter
-        const response = await axios.get(`/api/v1/fax/rxpatient/${trnRxId}`, config);
+        const response = await axiosBaseURL.get(`/api/v1/fax/rxpatient/${trnRxId}`, config);
         
         const responseData = response.data;
         console.log(responseData);
@@ -149,7 +150,7 @@ function PatientDetailsForm() {
           },
         };
   
-        const response = await axios.get('/api/v1/fax/stateDetails', config);
+        const response = await axiosBaseURL.get('/api/v1/fax/stateDetails', config);
         const stateData = response.data.data; // Assuming the API returns an array of states
         setStates(stateData);
       } catch (error) {
@@ -190,7 +191,7 @@ function PatientDetailsForm() {
   
     try {
       // Send a PUT request to your API to save the data and include the authorization header
-      const response = await fetch(`/api/v1/fax/rxpatient`, {
+      const response = await axiosBaseURL.put(`/api/v1/fax/rxpatient`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +220,7 @@ function PatientDetailsForm() {
           },
         };
 
-        const response = await axios.get('/api/v1/fax/distributorDetails', config);
+        const response = await axiosBaseURL.get('/api/v1/fax/distributorDetails', config);
         const distributorData = response.data.data; // Adjust based on API response structure
 
         setDistributorData(distributorData);

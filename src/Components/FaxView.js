@@ -8,6 +8,7 @@ import { Button, Paper, Typography, Grid } from '@mui/material';
 import PagingTabs from './PagingTabs';
 import { useParams, useLocation } from 'react-router-dom';
 import FaxDetails from './FaxDetails';
+import axiosBaseURL from './axios.js';
 
 
 
@@ -37,7 +38,7 @@ export  function FaxView({ onReset }) {
     const token = localStorage.getItem('token');
 
     if (token) {
-      axios({
+      axiosBaseURL({
         method: 'GET',
         url: `/api/v1/fax/getFaxPdf/${faxId}`,
         responseType: 'arraybuffer',

@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axiosBaseURL from './axios.js';
  
 const defaultTheme = createTheme();
 
@@ -23,8 +24,8 @@ export default function LoginPage() {
   
   const axiosLogin = async () => {
     try {
-     //const response = await axios.post('https://dev.tika.mobi:8443/next-service/api/v1/auth/signin', {
-       const response = await axios.post('/api/v1/auth/signin', {
+       const response = await axiosBaseURL.post('/api/v1/auth/signin', {
+       //const response = await axios.post('/api/v1/auth/signin', {
         userName: email,
         password: password,
       });

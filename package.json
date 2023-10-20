@@ -1,7 +1,6 @@
 {
   "name": "rx_management",
   "version": "0.1.0",
-  "proxy": "http://localhost:9090",
   "homepage": "nsrxmgt",
   "private": true,
   "dependencies": {

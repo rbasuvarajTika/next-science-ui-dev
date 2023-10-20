@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ConfirmEmail from './ConfirmEmail';
 import ResetPassword from './ResetPassword';
 
+
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState(1); // Step 1: Confirm Email, Step 2: Reset Password
 
